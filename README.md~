@@ -3,7 +3,7 @@ Real Estate Web App
 This is a web app for real estate sellers and buyers.
 Dealers and sellers can list houses on this web app.
 Buyers can search houses based on their perferences.
-Then, contact with dealers and sellers for appointments.
+Then, contact with dealers and sellers to make appointments.
 
 This app is implemented by Flask framework in Python.
 
