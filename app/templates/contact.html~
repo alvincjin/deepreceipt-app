@@ -1,0 +1,81 @@
+<!-- extend base layout -->
+{% extends "base.html" %} {% block content %} {% include 'flash.html' %}
+
+
+
+{% if success %}
+<p>Thank you for your message. We'll get back to you shortly.</p>
+{% else %}
+<form action="{{ url_for('contact') }}" method=post>
+	{{ form.hidden_tag() }}
+
+	<fieldset>
+		<legend>Contact</legend>
+
+
+		{{ form.name.label }} {% for message in form.name.errors %}
+		<div class="flash">{{ message }}</div>
+		{% endfor %} {{ form.name(required="required") }} {{ form.email.label }} {% for message in
+		form.email.errors %}
+		<div class="flash">{{ message }}</div>
+		{% endfor %} {{ form.email(required="required", type="email") }} {{ form.subject.label }} {% for message
+		in form.subject.errors %}
+		<div class="flash">{{ message }}</div>
+		{% endfor %} {{ form.subject }} {{ form.message.label }} {% for
+		message in form.message.errors %}
+		<div class="flash">{{ message }}</div>
+		{% endfor %} {{ form.message(required="required") }}
+
+
+
+		<div class="control-group">
+			<div class="controls">
+				<button type="submit" class="btn btn-primary">Send</button>
+			</div>
+		</div>
+	</fieldset>
+
+</form>
+
+<address>
+	<strong>Big Face Real Estate, Inc.</strong><br> <i
+		class="icon-home"></i>795 Folsom Ave, Suite 600<br> San
+	Francisco, CA 94107<br> <i class="icon-phone"></i> (123) 456-7890<br>
+	<i class="icon-envelope"></i> <a href="mailto:#">alvinuw@gmail.com</a>
+</address>
+
+<div class="well">
+            <input type="text" class="span2" value="4" id="sl1" >
+</div>
+ <link href="/static/css/slider.css" rel="stylesheet">
+<script src="/static/js/bootstrap-slider.js"></script>
+
+<script>
+		$(function(){
+			window.prettyPrint && prettyPrint();
+
+        $('#sl1').slider({
+          formater: function(value) {
+            return 'Current value: '+value;
+          }
+        });
+        $('#sl2').slider();
+
+        var RGBChange = function() {
+          $('#RGB').css('background', 'rgb('+r.getValue()+','+g.getValue()+','+b.getValue()+')')
+        };
+
+        var r = $('#R').slider()
+                .on('slide', RGBChange)
+                .data('slider');
+        var g = $('#G').slider()
+                .on('slide', RGBChange)
+                .data('slider');
+        var b = $('#B').slider()
+                .on('slide', RGBChange)
+                .data('slider');
+
+        $('#eg input').slider();
+    });
+  </script>
+{% endif %} {% endblock %}

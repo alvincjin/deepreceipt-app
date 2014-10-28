@@ -1,0 +1,35 @@
+<!-- extend base layout -->
+{% extends "base.html" %}
+
+{% block content %}
+{% if g.user.is_authenticated() %}
+<h1>Hi, {{g.user.nickname}}!</h1>
+{% else %}
+<h1>Welcome Guest! Please Sign Up!</h1>
+{% endif %}
+{% include 'flash.html' %}
+
+{% if g.user.role %}
+<div class="well">
+
+<p><a href="{{ url_for('new_post')}}" class="btn btn-success btn-large"><strong>Start a Post!</strong></a></p>
+{% endif %}
+
+</div>
+
+{% for post in posts.items %}
+    {% include 'post.html' %}
+{% endfor %}
+<ul class="pager">
+    {% if posts.has_prev %}
+    <li class="previous"><a href="{{ url_for('showlist', page = posts.prev_num) }}">Newer posts</a></li>
+    {% else %}
+    <li class="previous disabled"><a href="#">Newer posts</a></li>
+    {% endif %}
+    {% if posts.has_next %}
+    <li class="next"><a href="{{ url_for('showlist', page = posts.next_num) }}">Older posts</a></li>
+    {% else %}
+    <li class="next disabled"><a href="#">Older posts</a></li>
+    {% endif %}
+</ul>
+{% endblock %}

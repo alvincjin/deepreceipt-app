@@ -1,0 +1,130 @@
+<!-- extend base layout -->
+{% extends "base.html" %} {% block content %} {% include 'flash.html' %}
+
+
+<table class="table table-hover">
+
+	<tr>
+		<td>
+			<div class="well well-large" style="height: 210px;">
+
+				<div class="page-header">
+					<h4>
+						<h1>{{user.firstname}}&nbsp;{{user.lastname}}&nbsp;({{user.nickname}})</h1>
+					</h4>
+				</div>
+				<p>Email: <a href="mailto:#">{{user.email}}</a>&nbsp;&nbsp;Phone: {{user.phone}} </p>
+				{% if user.about_me %}
+				<p>{{user.about_me}}</p>
+				
+				
+				{% endif %} 
+				
+				{% if user.last_seen %}
+				
+					<p>Last seen: {{momentjs(user.last_seen).calendar()}}</p>
+				
+				{% endif %} 
+				
+				
+				{% if g.user.nickname == user.nickname %}
+				<a href="{{url_for('edit_profile')}}">
+				<i class="icon-user"></i>Profile</a> 						
+				{% if g.user.role==0 %}
+					&nbsp;&nbsp;&nbsp; <a href="{{url_for('preference')}}">
+					<i class="icon-check"></i>Preference</a> 		
+                {% else %}
+				
+
+				
+				&nbsp;&nbsp;&nbsp; <a href="{{url_for('edit_post', pid=0)}}">
+				<i class="icon-edit"></i>Post</a>
+
+
+				 &nbsp;&nbsp;&nbsp; <a href="#myModal" class="text" data-toggle="modal">
+				<i class="icon-calendar"></i>Calendar</a> 
+				 
+				 <div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    			<div class="modal-header">
+      			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+      				&times;</button>
+      			<h3 id="myModalLabel">My Calendar</h3>
+    			</div>
+   				 <div class="modal-body">
+      				<div>
+      					<iframe src="https://www.google.com/calendar/embed?showTitle=0&amp;height=600&amp;wkst=1&amp;bgcolor=%23FFFFFF&amp;src=alvinuw%40gmail.com&amp;color=%232952A3&amp;ctz=America%2FToronto" style=" border-width:0 " width="530" height="400" frameborder="0" scrolling="no"></iframe>
+      				</div>
+    			</div>
+    
+    			<div class="modal-footer">
+      				<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>      
+    			</div>
+  				</div>
+
+				{% endif %} {% endif %}
+				
+			</div> 
+		</td>
+
+		<td width="70px">
+			<div class="well well-large" style="height: 210px;">
+				<img border="0" src="{{user.portrait}}"
+					alt="Image is not Available." width="140" height="200"
+					class="img-polaroid" /> 
+			</div>
+		</td>
+
+	</tr>
+
+</table>
+
+{% if user.role==0 %}
+<h4>My Dream Home</h4>
+
+<table class="table table-hover">
+
+	<tr>
+		
+		<td>City: {{user.pref.location}}</td>
+
+		<td>Property Type: {{user.pref.style}}</td>
+		<td>Price: {{user.pref.price}}</td>
+	</tr>
+	<tr>
+		<td>Bedroom: {{user.pref.bedroom_no}}</td>
+		<td>Bathroom: {{user.pref.bathroom_no}}</td>
+		<td>Garage/Parking Lot: {{user.pref.garage_no}}</td>
+	</tr>
+</table>
+
+
+
+
+<legend>My Collections</legend>
+
+{% else %}
+
+
+
+
+
+<legend>My Posts</legend>
+
+{% endif %} {% for post in posts.items %} {% include 'post.html' %} {%
+endfor %}
+
+<ul class="pager">
+	{% if posts.has_prev %}
+	<li class="previous"><a
+		href="{{ url_for('user', nickname = user.nickname, page = posts.prev_num) }}">Newer
+			posts</a></li> {% else %}
+	<li class="previous disabled"><a href="#">Newer posts</a></li> {% endif
+	%} {% if posts.has_next %}
+	<li class="next"><a
+		href="{{ url_for('user', nickname = user.nickname, page = posts.next_num) }}">Older
+			posts</a></li> {% else %}
+	<li class="next disabled"><a href="#">Older posts</a></li> {% endif %}
+</ul>
+
+
+{% endblock %}

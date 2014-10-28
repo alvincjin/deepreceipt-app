@@ -1,0 +1,104 @@
+<!-- extend base layout -->
+{% extends "base.html" %} {% block content %}
+<h1>Edit Your Post</h1>
+{% include 'flash.html' %}
+<div class="well">
+	<form class="form-horizontal" action="" method="POST" name="post"
+		enctype=multipart/form-data>
+		{{form.hidden_tag()}}
+		
+		<div class="control-group{% if form.errors.post %} error{% endif %}">
+			<label class="control-label" for="title">Title:</label>
+			<div class="controls">
+				{{ form.title(maxlength = 64, class = "span4") }} {% for error in
+				form.errors.title %} <span class="help-inline">[{{error}}]</span><br>
+				{% endfor %}
+			</div>
+		</div>
+
+		<div class="control-group{% if form.errors.post %} error{% endif %}">
+			<label class="control-label" for="photo">Photo:</label>
+			<div class="controls">
+				{{form.fileName(size = 12, maxlength = 10, class = "span4")}} {% for
+				error in form.errors.fileName %} <span class="help-inline">[{{error}}]</span><br>
+				{% endfor %}
+
+			</div>
+		</div>
+
+		<div class="control-group{% if form.errors.post %} error{% endif %}">
+			<label class="control-label" for="price">Price:</label>
+			<div class="controls">
+				{{ form.price(size = 10, maxlength = 10, class = "span4", placeholder="100,000 to 10,000,000") }} {% for
+				error in form.errors.price %} <span class="help-inline">[{{error}}]</span><br>
+				{% endfor %}
+			</div>
+		</div>
+
+		<div class="control-group{% if form.errors.post %} error{% endif %}">
+			<label class="control-label" for="location">Location:</label>
+			<div class="controls">
+				{{ form.location }} {% for error in form.errors.location %} <span
+					class="help-inline">[{{error}}]</span><br> {% endfor %}
+			</div>
+		</div>
+		<div class="control-group{% if form.errors.post %} error{% endif %}">
+			<label class="control-label" for="address">Address:</label>
+			<div class="controls">
+				{{ form.address }} {% for error in form.errors.address %} <span
+					class="help-inline">[{{error}}]</span><br> {% endfor %}
+			</div>
+		</div>
+		<div class="control-group{% if form.errors.post %} error{% endif %}">
+			<label class="control-label" for="location">Property Type:</label>
+			<div class="controls">
+				{{ form.style }} {% for error in form.errors.style %} <span
+					class="help-inline">[{{error}}]</span><br> {% endfor %}
+			</div>
+		</div>
+
+		<div class="control-group{% if form.errors.post %} error{% endif %}">
+			<label class="control-label" for="Bedroom No.">Bedroom No.:</label>
+			<div class="controls">
+				{{ form.bedroom_no(maxlength = 64, class = "span4") }} {% for error
+				in form.errors.bedroom_no %} <span class="help-inline">[{{error}}]</span><br>
+				{% endfor %}
+			</div>
+		</div>
+
+		<div class="control-group{% if form.errors.post %} error{% endif %}">
+			<label class="control-label" for="Bathroom No.">Bathroom No.:</label>
+			<div class="controls">
+				{{ form.bathroom_no(maxlength = 64, class = "span4") }} {% for error
+				in form.errors.bathroom_no %} <span class="help-inline">[{{error}}]</span><br>
+				{% endfor %}
+			</div>
+		</div>
+
+		<div class="control-group{% if form.errors.post %} error{% endif %}">
+			<label class="control-label" for="Garage No.">Garage No.:</label>
+			<div class="controls">
+				{{ form.garage_no(maxlength = 64, class = "span4") }} {% for error
+				in form.errors.garage_no %} <span class="help-inline">[{{error}}]</span><br>
+				{% endfor %}
+			</div>
+		</div>
+
+		<div class="control-group{% if form.errors.post %} error{% endif %}">
+			<label class="control-label" for="body">Description:</label>
+			<div class="controls">
+				{{ form.body(maxlength = 64, rows = 4, class = "span4", placeholder = "Less than 1000 characters") }} {% for
+				error in form.errors.body %} <span class="help-inline">[{{error}}]</span><br>
+				{% endfor %}
+			</div>
+		</div>
+
+
+		<div class="control-group">
+			<div class="controls">
+				<input class="btn btn-primary" type="submit" value="Submit">
+			</div>
+		</div>
+	</form>
+</div>
+{% endblock %}

@@ -1,0 +1,54 @@
+{% extends "base.html" %} {% block content %}
+
+<form action="{{ url_for('preference') }}" method=post>
+	{{ form.hidden_tag() }}
+
+	<fieldset>
+		<legend>Set Your Peference</legend>
+		{{ form.location.label }} {{ form.location }} {{ form.price.label }}
+		{{ form.price(required="required") }} {{ form.style.label }} {{form.style}} {{
+		form.bedroom_no.label }} {{form.bedroom_no(id="sl1")}} {{ form.bathroom_no.label
+		}} {{form.bathroom_no(id="sl2")}} {{ form.garage_no.label }} {{form.garage_no(id="sl3")}}
+
+		<label class="checkbox"> {{ form.notify }} Send me emails for
+			matching items </label>
+
+		<div class="control-group">
+			<div class="controls">
+				<button type="submit" class="btn btn-primary">Save</button>
+			</div>
+		</div>
+	</fieldset>
+</form>
+
+
+ <link href="/static/css/slider.css" rel="stylesheet">
+<script src="/static/js/bootstrap-slider.js"></script>
+
+<script>
+		$(function(){
+			window.prettyPrint && prettyPrint();
+
+        $('#sl1').slider({
+          formater: function(value) {
+            return 'Current value: '+value;
+          }
+        });
+         $('#sl2').slider({
+          formater: function(value) {
+            return 'Current value: '+value;
+          }
+        });
+         $('#sl3').slider({
+          formater: function(value) {
+            return 'Current value: '+value;
+          }
+        });
+
+      
+    });
+  </script>
+
+{% endblock %}
+
+

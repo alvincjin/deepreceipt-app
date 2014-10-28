@@ -1,0 +1,112 @@
+<!-- extend base layout -->
+{% extends "base.html" %} {% block content %} {% if
+g.user.is_authenticated() %}
+<h3>Hi, {{g.user.nickname}}!</h3>
+{% else %}
+<h3>Welcome Guest! Please Sign Up!</h3>
+{% endif %} {% include 'flash.html' %}
+
+{% if g.user.role %}
+<div class="well">
+
+	<p>
+		<a href="{{ url_for('edit_post', pid=0)}}" class="btn btn-primary btn-middle"><strong>Start a Post!</strong></a>
+	</p>
+</div>
+
+{% else %}
+
+
+<div class="accordion-group">
+	<div class="accordion-heading">
+	<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" 
+	href="#collapseTwo"> 
+	<strong>Advanced Search</strong>
+	</a>
+	</div>
+	<div id="collapseTwo" class="accordion-body collapse in">
+	<div class="accordion-inner">
+
+		<form action="" method=post>
+		{{ form.hidden_tag() }}
+
+    	<div class="well well-middle" style="height: 130px;">
+			<table class="table">
+				<tr>
+					<td>{{ form.location.label }} {{ form.location(class="span3") }}</td>
+					<td>{{ form.style.label }}{{form.style(class="span3") }}</td>
+					<td>{{ form.price.label }} 
+						<div class="input-prepend input-append">
+    					<span class="add-on">$</span>
+    					{{ form.price(size=30, class_='input-small') }}
+       					<span class="add-on">.00</span>
+    					</div>
+					</td>
+				</tr>
+
+				<tr>
+					
+					<td>{{ form.bedroom_no.label }} {{form.bedroom_no(id="sl1" ,class_='input-small')}}</td>
+					<td>{{ form.bathroom_no.label }} {{form.bathroom_no(id="sl2", class_='input-small')}}</td>
+					<td>
+						<div class="control-group">
+						<div class="controls">
+						<button type="submit" class="btn btn-primary btn-middle">Search Home</button>
+						</div>
+						</div>
+					</td>
+				</tr>
+			</table>
+		</div>
+		</form>
+
+
+	</div>
+	</div>
+</div>
+{% endif %}
+
+
+
+{% for post in posts.items %} {% include 'post.html' %} {% endfor %}
+<ul class="pager">
+	{% if posts.has_prev %}
+	<li class="previous"><a
+		href="{{ url_for('list_post', page = posts.prev_num) }}">Newer
+			posts</a></li> {% else %}
+	<li class="previous disabled"><a href="#">Newer posts</a></li> {% endif
+	%} {% if posts.has_next %}
+	<li class="next"><a
+		href="{{ url_for('list_post', page = posts.next_num) }}">Older
+			posts</a></li> {% else %}
+	<li class="next disabled"><a href="#">Older posts</a></li> {% endif %}
+</ul>
+
+
+ <link href="/static/css/slider.css" rel="stylesheet">
+<script src="/static/js/bootstrap-slider.js"></script>
+
+<script>
+		$(function(){
+			window.prettyPrint && prettyPrint();
+
+        $('#sl1').slider({
+          formater: function(value) {
+            return 'Current value: '+value;
+          }
+        });
+         $('#sl2').slider({
+          formater: function(value) {
+            return 'Current value: '+value;
+          }
+        });
+         $('#sl3').slider({
+          formater: function(value) {
+            return 'Current value: '+value;
+          }
+        });
+
+    
+    });
+  </script>
+{% endblock %}

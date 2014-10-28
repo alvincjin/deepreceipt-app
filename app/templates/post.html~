@@ -1,0 +1,68 @@
+<table class="table table-hover">
+
+	<tr>
+		<td width="70px"><a
+			href="{{url_for('user', nickname = post.author.nickname)}}"> <img
+				border="0" src="{{post.img}}" alt="Image is not Available."
+				width="240" height="160" />
+		</a></td>
+
+		<td><legend>
+				<strong>{{ post.title }}</strong>
+			</legend>
+
+			<table class="table table-hover">
+				<tr>
+					<td>City: {{post.location}}</td>
+					<td>Price: $ {{post.price}}</td>
+					<td>Type: {{post.style}}</td>
+				</tr>
+
+				<tr>
+					<td>Bedroom: {{post.bedroom_no}}</td>
+					<td>Bathroom: {{post.bathroom_no}}</td>
+					<td>Garage/Park: {{post.garage_no}}</td>
+				</tr>
+
+				<!--<tr>Description: {{post.body}}
+				</tr>-->
+				<tr><td>Address: {{post.address}}</td>
+				 <td>    
+			 
+				 <!-- Button to trigger modal -->
+     			
+				<a href="#myModal" class="text" data-toggle="modal">
+				<i class="icon-map-marker"></i>Map</a> 
+				{% include "map.html" %}
+						
+    				</td><td>
+    				</td>
+				</tr>
+				<tr>
+
+			  <td><a href="{{url_for('user', nickname = post.author.nickname)}}"> 
+			            {{post.author.nickname}}</a>
+						&nbsp;post {{momentjs(post.timestamp).fromNow()}}</td>
+					<td>{{post.interested_user.count()}} people like it.</td>
+
+		<td>{% if g.user.role %} {% if g.user.nickname == post.author.nickname %}
+		<a href="{{ url_for('edit_post', pid=post.id)}}"><i class="icon-edit"></i></a>
+		 <a href="{{ url_for('delete', id = post.id) }}"><i class="icon-trash"></i> </a>
+		 {% endif %} {% else %}<a href="{{ url_for('bookmark', pid=post.id)}}"><i class="icon-thumbs-up"></i>Like </a>
+	
+						
+						{% endif %}
+
+					</td>
+
+
+				</tr>
+			</table></td>
+	</tr>
+
+</table>
+
+
+
+
+

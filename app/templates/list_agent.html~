@@ -1,0 +1,48 @@
+<!-- extend base layout -->
+{% extends "base.html" %} {% block content %} {% if
+g.user.is_authenticated() %}
+<h3>Hi, {{g.user.nickname}}!</h3>
+{% else %}
+<h3>Welcome Guest! Please Sign Up!</h3>
+{% endif %} {% include 'flash.html' %}
+
+
+
+</div>
+
+{% for user in users.items %}
+<table class="table table-hover">
+
+	<tr>
+		<td width="70px">{% if user.portrait %} <img border="0"
+			src="{{user.portrait}}" alt="Image is not Available." width="140"
+			height="200" class="img-polaroid" /> {% else %} <img border="0"
+			src="/static/agent_photo/agent_default.gif"
+			alt="Image is not 			Available." width="140" height="200"
+			class="img-polaroid" /> {% endif %} </a></td>
+
+		<td>
+			<div class="page-header">
+				<h4>{{ user.nickname }}</h4>
+			</div>
+
+			<p>{{user.about_me}}</p>
+
+		</td>
+	</tr>
+
+</table>
+{% endfor %}
+<ul class="pager">
+	{% if users.has_prev %}
+	<li class="previous"><a
+		href="{{ url_for('list_agent', page = users.prev_num) }}">Prev
+			pages</a></li> {% else %}
+	<li class="previous disabled"><a href="#">Prev pages</a></li> {% endif
+	%} {% if users.has_next %}
+	<li class="next"><a
+		href="{{ url_for('list_agent', page = users.next_num) }}">Next
+			pages</a></li> {% else %}
+	<li class="next disabled"><a href="#">Next pages</a></li> {% endif %}
+</ul>
+{% endblock %}

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+ 
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <style type="text/css">
+#myModal label { width: auto!important; display:inline!important; }
+#myModal img { max-width: none!important; }
+#mapcanvas {width:520px; height:400px}
+#mapcanvas label { width: auto!important; display:inline!important; }
+#mapcanvas img { max-width: none!important; }
+
+</style>
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+  
+
+  
+
+    <div class="container">
+
+         
+
+       <!-- Modal -->
+  <div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+      <h3 id="myModalLabel">Cineplex Odeon Yonge & Dundas Cinemas</h3>
+    </div>
+    <div class="modal-body">
+      <div id="mapcanvas"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>      
+    </div>
+  </div>
+
+    </div> <!-- /container -->
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+     <script src="/static/js/jquery-1.9.1.min.js"></script>
+      <script src="/static/js/bootstrap.min.js"></script>
+    <script src="http://maps.google.com/maps/api/js?sensor=false"></script>
+    <script type="text/javascript">
+     myLatlng = new google.maps.LatLng(43.65644,-79.380686);
+     centerLatlng = new google.maps.LatLng(43.65644,-79.380686);
+
+      //start of modal google map
+      $("#myModal").modal({
+          show: false
+      }).on("shown", function()
+      {
+          var map_options = {
+            zoom: 14,
+            mapTypeControl: false,
+            center:centerLatlng,
+            panControl:false,
+            rotateControl:false,
+            streetViewControl: false,
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+          };
+
+        var map = new google.maps.Map(document.getElementById("mapcanvas"), map_options);
+
+         var contentString = '<div id="mapInfo">'+
+            '<p><strong>Cineplex Odeon Yong & Dundas</strong><br>'+
+            'Suite 402<br>10 Dundas Street East<br>' +
+            'Toronto, ON<br>'+
+            'P: (416) 977-9262</p>'+
+            '<a href="http://www.google.ca/url?sa=t&rct=j&q=&esrc=s&source=web&cd=1&cad=rja&ved=0CF4QFjAA&url=http%3A%2F%2Fwww.cineplex.com%2FTheatres%2FTheatreDetails%2FCineplex-Odeon-Yonge-Dundas-Cinemas-formerly-AMC-.aspx&ei=wVxnUdfWM8GtqgGc5YGoCQ&usg=AFQjCNFrLpCFDXGjtGx6y1GSkSNvhdrMpA&bvm=bv.45107431,d.aWM" target="_blank">Now Playing</a>'+
+            '</div>';
+
+          var infowindow = new google.maps.InfoWindow({
+            content: contentString
+          });
+          
+          var marker = new google.maps.Marker({
+            position: myLatlng,
+            map: map,
+            title:"Cineplex Odeon Yong & Dundas",
+                  maxWidth: 200,
+                  maxHeight: 200
+          });
+          
+          google.maps.event.addListener(marker, 'click', function() {
+             infowindow.open(map,marker);
+          });
+          infowindow.open(map,marker);
+      });
+      //end of modal google map
+    </script>
+
+
+</html>

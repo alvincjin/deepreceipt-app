@@ -1,0 +1,50 @@
+<!-- extend base layout -->
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Edit Your Preference</h1>
+{% include 'flash.html' %}
+<div class="well">
+    <form class="form-horizontal" action="" method="POST" name="edit" enctype=multipart/form-data>
+        {{form.hidden_tag()}}
+        <div class="control-group{% if form.errors.post %} error{% endif %}">
+            <label class="control-label" for="nickname">Location:</label>
+            <div class="controls">
+                {{ form.location(maxlength = 64, class = "span4") }}
+                {% for error in form.errors.location %}
+                    <span class="help-inline">[{{error}}]</span><br>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="control-group{% if form.errors.post %} error{% endif %}">
+            <label class="control-label" for="about_me">Price:</label>
+            <div class="controls">
+                {{ form.price( class = "span4") }}
+                {% for error in form.errors.price %}
+                    <span class="help-inline">[{{error}}]</span><br>
+                {% endfor %}
+               
+            </div>
+        </div>
+
+       <div class="control-group{% if form.errors.post %} error{% endif %}">
+            <label class="control-label" for="avatar">Home Style:</label>
+            <div class="controls">
+                {{form.style(class = "span4")}}
+                {% for error in form.errors.style %}
+                    <span class="help-inline">[{{error}}]</span><br>
+                {% endfor %}
+                
+            </div>
+        </div>
+        <div class="control-group">
+            <div class="controls">
+                <input class="btn btn-primary" type="submit" value="Save">
+                <a href="{{ url_for('user', nickname = form.nickname.data) }}" class="btn">Cancel</a>
+                
+            </div>
+        </div>
+    </form>
+</div>
+</form>
+{% endblock %}

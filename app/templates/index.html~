@@ -1,0 +1,88 @@
+<!-- extend base layout -->
+{% extends "base.html" %} {% set page_title = 'Home' %} {% block content
+%}
+
+<div class="container">
+
+	<div id="myCarousel" class="carousel slide">
+
+		<!-- Carousel items -->
+		<div class="carousel-inner">
+			<div class="active item">
+				<img src="/static/img/slide-01.jpg" alt="">
+				<div class="container">
+					<div class="carousel-caption">
+						<p class="lead">I have a house, towards the sea, with Spring
+							Blossoms.</p>
+
+						<a class="btn btn-middle btn-primary" href="{{ url_for('signup')}}">Sign
+							up today</a>
+					</div>
+				</div>
+
+			</div>
+
+			<div class="item">
+
+				<img src="/static/img/slide-02.jpg" alt="">
+				<div class="container">
+					<div class="carousel-caption">
+
+						<p class="lead">Find our professional agent team.</p>
+						<a class="btn btn-middle btn-primary"
+							href="{{ url_for('list_agent')}}">Find an agent</a>
+					</div>
+				</div>
+
+			</div>
+
+			<div class="item">
+				<img src="/static/img/slide-03.jpg" alt="">
+				<div class="container">
+					<div class="carousel-caption">
+
+						<p class="lead">Find a perfect home for your family.</p>
+						<a class="btn btn-middle btn-primary"
+							href="{{ url_for('list_post')}}">Find a home</a>
+					</div>
+				</div>
+			</div>
+
+		</div>
+		<!-- Carousel nav -->
+		<a class="carousel-control left" href="#myCarousel" data-slide="prev">&lsaquo;</a>
+		<a class="carousel-control right" href="#myCarousel" data-slide="next">&rsaquo;</a>
+	</div>
+
+	<div class="row">
+		<div class="span4">
+			<h3>About Us</h3>
+			<ul>
+				<li>Our mission</li>
+				<li>Our Team</li>
+				<li>Careers</li>
+
+			</ul>
+		</div>
+		<div class="span4">
+			<h3>Location</h3>
+			<ul>
+				<li>Toronto</li>
+				<li>Markham</li>
+				<li>Mississauga</li>
+
+
+			</ul>
+		</div>
+		<div class="span4">
+			<h3>Tool Box</h3>
+			<ul>
+				<li>Agent Search</li>
+				<li>Property Search</li>
+				<li>Measure Convert</li>
+			</ul>
+		</div>
+	</div>
+
+</div>
+{% endblock %}
