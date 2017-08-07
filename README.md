@@ -5,20 +5,21 @@ Dealers and sellers can list houses on this web app.
 Buyers can search houses based on their perferences.
 Then, contact with dealers and sellers for appointments.
 
-This app is implemented by Flask framework in Python.
+This app is implemented by Flask framework in Python 2.7.
 
-Install App:
+Install and Run the App:
 
->mkdir project_folder
+```
+$ cd RealEstateApp
 
->cd project_folder
+$ virtualenv venv
 
->python virtualenv.py flask
+$ source venv/bin/activate
 
->flask/bin/pip install -r requirements.txt
+$ pip install -r requirements.txt
 
->flask/bin/python db_create.py
+$ python db_create.py
 
->./run.py
+$ python run.py
 
-
+```

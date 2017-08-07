@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, BooleanField, TextAreaField, RadioField,SelectField,IntegerField, FileField,SubmitField,validators, ValidationError, PasswordField
 from wtforms.validators import Required, Length, NumberRange
-#from flask_wtf.recaptcha import RecaptchaField
+from flask_wtf.recaptcha import RecaptchaField
 from app.models import User
 
 
@@ -55,7 +55,7 @@ class SignupForm(FlaskForm):
     password = PasswordField('Password', [validators.Required("Please enter a password.")])
     #Select fields keep a choices property which is a sequence of (value, label) pairs.
     user_role = SelectField('Role', choices=[('user', 'User'), ('agent', 'Agent')])
-    #recaptcha = RecaptchaField()
+    recaptcha = RecaptchaField()
     submit = SubmitField("Create account")
  
     def __init__(self, *args, **kwargs):
