@@ -1,5 +1,6 @@
 from flask.ext.wtf import Form, TextField, BooleanField, TextAreaField, RadioField,SelectField,IntegerField, FileField,SubmitField,validators, ValidationError, PasswordField
 from flask.ext.wtf import Required, Length, NumberRange
+#from flask_wtf.recaptcha import RecaptchaField
 from app.models import User
 
 

@@ -26,7 +26,7 @@ MAIL_PORT = 465
 MAIL_USE_TLS = False
 MAIL_USE_SSL = True
 MAIL_USERNAME = 'alvinuw'
-MAIL_PASSWORD = 'Moon4you'
+MAIL_PASSWORD = 'Changit'
 
 # administrator list
 ADMINS = ['alvinuw@gmail.com']
