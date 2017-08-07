@@ -1,6 +1,6 @@
 import os
 from flask import render_template, flash, redirect, session, url_for, request, g
-from flask.ext.login import login_user, logout_user, current_user, login_required
+from flask_login import login_user, logout_user, current_user, login_required
 from app import app, db, lm, oid, admin
 from forms import *
 from models import User, ROLE_USER, ROLE_ADMIN, Post, Preference, Favourite
@@ -8,9 +8,9 @@ from datetime import datetime
 from emails import follower_notification, send_emails
 from config import POSTS_PER_PAGE, MAX_SEARCH_RESULTS
 from werkzeug import secure_filename
-from flask.ext.mail import Message, Mail
-from flask.ext.admin.contrib.sqlamodel import ModelView
-from flask.ext.admin.contrib.fileadmin import FileAdmin
+from flask_mail import Message, Mail
+from flask_admin.contrib.sqla import ModelView
+from flask_admin.contrib.fileadmin import FileAdmin
 from pygeocoder import Geocoder
 import os.path as op
 from config import ADMINS
@@ -37,7 +37,7 @@ def load_user(id):
 @app.before_request
 def before_request():
     g.user = current_user
-    if g.user.is_authenticated():
+    if g.user.is_authenticated:
         g.user.last_seen = datetime.utcnow()
         db.session.add(g.user)
         db.session.commit()
@@ -109,7 +109,7 @@ def edit_profile():
         g.user.about_me = form.about_me.data
         g.user.phone = form.phone.data
         #file_path = '/static/agent_photo/agent_default.gif'
-        file = form.fileName.file
+        file = form.fileName.data
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_AGENT_FOLDER'], filename))
@@ -188,7 +188,7 @@ def edit_post(pid=0):
             post.timestamp = datetime.utcnow()
             post.user_id = user.id
 
-        file = form.fileName.file
+        file = form.fileName.data
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_HOUSE_FOLDER'], filename))
@@ -298,7 +298,7 @@ def user(nickname, page = 1):
 def signup():
     form = SignupForm()
 
-    if g.user is not None and g.user.is_authenticated():
+    if g.user is not None and g.user.is_authenticated:
         return redirect(url_for('user', nickname = g.user.nickname))
     
     if request.method == 'POST':
@@ -339,7 +339,7 @@ def signup():
 @app.route('/signin', methods=['GET', 'POST'])
 def signin():
         
-    if g.user is not None and g.user.is_authenticated():
+    if g.user is not None and g.user.is_authenticated:
         return redirect(url_for('user', nickname = g.user.nickname))
     form = SigninForm()
    

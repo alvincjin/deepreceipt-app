@@ -1,21 +1,22 @@
-from flask.ext.wtf import Form, TextField, BooleanField, TextAreaField, RadioField,SelectField,IntegerField, FileField,SubmitField,validators, ValidationError, PasswordField
-from flask.ext.wtf import Required, Length, NumberRange
-#from flask_wtf.recaptcha import RecaptchaField
+from flask_wtf import FlaskForm
+from wtforms import StringField, BooleanField, TextAreaField, RadioField,SelectField,IntegerField, FileField,SubmitField,validators, ValidationError, PasswordField
+from wtforms.validators import DataRequired, Length, NumberRange
+from flask_wtf.recaptcha import RecaptchaField
 from app.models import User
 
 
-class EditForm(Form):
-    nickname = TextField('nickname', validators = [Required()])
+class EditForm(FlaskForm):
+    nickname = StringField('nickname', validators = [DataRequired()])
     about_me = TextAreaField('about_me', validators = [Length(min = 0, max = 140)])
     phone = IntegerField('phone')
     fileName = FileField()
 
     def __init__(self, original_nickname, *args, **kwargs):
-        Form.__init__(self, *args, **kwargs)
+        FlaskForm.__init__(self, *args, **kwargs)
         self.original_nickname = original_nickname
         
     def validate(self):
-        if not Form.validate(self):
+        if not FlaskForm.validate(self):
             return False
         if self.nickname.data == self.original_nickname:
             return True
@@ -26,8 +27,8 @@ class EditForm(Form):
             return False
         return True
         
-class PostForm(Form):
-    title = TextField('Title', validators = [Required()])
+class PostForm(FlaskForm):
+    title = StringField('Title', validators = [DataRequired()])
     style = SelectField('Property Type', choices=[('House', 'House'), ('Town House','Town House'), ('Condo', 'Condo'), ('Apartment','Apartment')])
     bedroom_no = IntegerField('Bedroom', validators = [NumberRange(min=1, max= 5)])
     bathroom_no = IntegerField('Bathroom', validators = [NumberRange(min=1, max= 5)])
@@ -36,32 +37,32 @@ class PostForm(Form):
     fileName = FileField()
     location = location = SelectField('City', choices=[('Toronto', 'Toronto'), ('Mississauga', 'Mississauga'),('Markham','Markham'),('Richmond Hill','Richmond Hill'),('Vaughan','Vaughan'),('Milton','Milton')])
     price = IntegerField('Price', validators = [NumberRange(min=100000, max= 10000000)])
-    address = TextField('Address')
+    address = StringField('Address')
     
     
 
-class ContactForm(Form):
-    name = TextField("Name",  [validators.Required("Please enter your name.")])
-    email = TextField("Email",  [validators.Required("Please enter your email address."), validators.Email("e.g. user@example.com")])
-    subject = TextField("Subject",  [validators.Required("Please enter a subject.")])
-    message = TextAreaField("Message",  [validators.Required("Please enter a message.")])
+class ContactForm(FlaskForm):
+    name = StringField("Name",  [validators.required("Please enter your name.")])
+    email = StringField("Email",  [validators.required("Please enter your email address."), validators.Email("e.g. user@example.com")])
+    subject = StringField("Subject",  [validators.required("Please enter a subject.")])
+    message = TextAreaField("Message",  [validators.required("Please enter a message.")])
     submit = SubmitField("Send")
 
-class SignupForm(Form):
-    firstname = TextField("First name",  [validators.Required("Please enter your first name.")])
-    lastname = TextField("Last name",  [validators.Required("Please enter your last name.")])
-    email = TextField("Email",  [validators.Required("Please enter your email address."), validators.Email("Please enter your email address.")])
-    password = PasswordField('Password', [validators.Required("Please enter a password.")])
+class SignupForm(FlaskForm):
+    firstname = StringField("First name",  [validators.required("Please enter your first name.")])
+    lastname = StringField("Last name",  [validators.required("Please enter your last name.")])
+    email = StringField("Email",  [validators.required("Please enter your email address."), validators.Email("Please enter your email address.")])
+    password = PasswordField('Password', [validators.required("Please enter a password.")])
     #Select fields keep a choices property which is a sequence of (value, label) pairs.
     user_role = SelectField('Role', choices=[('user', 'User'), ('agent', 'Agent')])
-    #recaptcha = RecaptchaField()
+    recaptcha = RecaptchaField()
     submit = SubmitField("Create account")
  
     def __init__(self, *args, **kwargs):
-        Form.__init__(self, *args, **kwargs)
+        FlaskForm.__init__(self, *args, **kwargs)
  
     def validate(self):
-        if not Form.validate(self):
+        if not FlaskForm.validate(self):
             return False
         user = User.query.filter_by(email = self.email.data.lower()).first()
         if user:
@@ -70,17 +71,17 @@ class SignupForm(Form):
         else:
             return True
 
-class SigninForm(Form):
-    email = TextField("Email",  [validators.Required("Please enter your email address."), validators.Email("Please enter your email address.")])
-    password = PasswordField('Password', [validators.Required("Please enter a password.")])
+class SigninForm(FlaskForm):
+    email = StringField("Email",  [validators.required("Please enter your email address."), validators.Email("Please enter your email address.")])
+    password = PasswordField('Password', [validators.required("Please enter a password.")])
     remember_me = BooleanField('Remember me', default = False)
     submit = SubmitField("Sign In")
     
     def __init__(self, *args, **kwargs):
-        Form.__init__(self, *args, **kwargs)
+        FlaskForm.__init__(self, *args, **kwargs)
  
     def validate(self):
-        if not Form.validate(self):
+        if not FlaskForm.validate(self):
             return False
      
         user = User.query.filter_by(email = self.email.data.lower()).first()
@@ -90,7 +91,7 @@ class SigninForm(Form):
             self.email.errors.append("Invalid e-mail or password")
             return False
 
-class PeferForm(Form):
+class PeferForm(FlaskForm):
     style = SelectField('Property Type', choices=[('House', 'House'), ('Town House','Town House'), ('Condo', 'Condo'), ('Apartment','Apartment')])
     bedroom_no = IntegerField('Bedroom', default = 3, validators = [NumberRange(min=1, max= 5)])
     bathroom_no = IntegerField('Bathroom', default = 3, validators = [NumberRange(min=1, max= 5)])
@@ -105,5 +106,5 @@ class PeferForm(Form):
         return True
 
     
-class OrderForm(Form):
+class OrderForm(FlaskForm):
     order = SelectField('Sort By', choices=[('price', 'Price'), ('location', 'Location'),('style','Type'), ('date','Date')])

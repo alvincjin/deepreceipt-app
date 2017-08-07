@@ -1,32 +1,46 @@
-{% extends "base.html" %} {% block content %} 
+{% extends "base.html" %}
+
+{% block content %}
 {% include 'flash.html' %}
-{% for message in
-form.firstname.errors %}
+
+{% for message in form.firstname.errors %}
 <div class="flash">{{ message }}</div>
-{% endfor %} {% for message in form.lastname.errors %}
+{% endfor %}
+
+{% for message in form.lastname.errors %}
 <div class="flash">{{ message }}</div>
-{% endfor %} {% for message in form.email.errors %}
+{% endfor %}
+
+{% for message in form.email.errors %}
 <div class="flash">{{ message }}</div>
-{% endfor %} {% for message in form.password.errors %}
+{% endfor %}
+
+{% for message in form.password.errors %}
 <div class="flash">{{ message }}</div>
 {% endfor %}
 
 <form action="{{ url_for('signup') }}" method=post>
-	{{ form.hidden_tag() }}
+    {{ form.hidden_tag() }}
 
-	<fieldset>
-		<legend>Sign Up</legend>
-		{{ form.firstname.label }} {{ form.firstname(autofocus=true,required="required") }} {{ form.lastname.label
-		}} {{ form.lastname(autofocus=true, required="required") }} {{ form.email.label }} {{ form.email(required="required", type="email") }} {{
-		form.password.label }} {{ form.password }} {{ form.user_role.label }}
-		{{form.user_role}}
-
-		<div class="control-group">
-			<div class="controls">
-				<button type="submit" class="btn btn-primary">Sign Up</button>
-			</div>
-		</div>
-	</fieldset>
+    <fieldset>
+        <legend>Sign Up</legend>
+        {{ form.firstname.label }}
+        {{ form.firstname(autofocus=true,required="required") }}
+        {{ form.lastname.label}}
+        {{ form.lastname(autofocus=true, required="required") }}
+        {{ form.email.label }}
+        {{ form.email(required="required", type="email") }}
+        {{ form.password.label }}
+        {{ form.password }}
+        {{ form.user_role.label }}
+        {{form.user_role}}
+        {{ form.recaptcha }}
+        <div class="control-group">
+            <div class="controls">
+                <button type="submit" class="btn btn-primary">Sign Up</button>
+            </div>
+        </div>
+    </fieldset>
 </form>
 
 {% endblock %}
