@@ -26,7 +26,7 @@
 					<li><a href="{{ url_for('list_agent') }}">Find Agent</a></li>
 					<li><a href="{{ url_for('list_post') }}">Find Home</a></li>
 					<li><a href="{{ url_for('contact') }}">Contact</a></li> {% if
-					g.user.is_authenticated() %}
+					g.user.is_authenticated %}
 					<li><a
 						href="{{ url_for('user', nickname = g.user.nickname) }}">My
 							Profile</a></li>

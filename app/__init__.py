@@ -1,13 +1,13 @@
 import os
 from flask import Flask
-from flask.ext.sqlalchemy import SQLAlchemy
-from flask.ext.login import LoginManager
-from flask.ext.openid import OpenID
-from flask.ext.mail import Mail
+from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager
+from flask_openid import OpenID
+from flask_mail import Mail
 from config import basedir, ADMINS, MAIL_SERVER, MAIL_PORT, MAIL_USERNAME, MAIL_PASSWORD
 from momentjs import momentjs
-from flask.ext.mongoengine import MongoEngine
-from flask.ext.admin import Admin, BaseView,expose
+from flask_mongoengine import MongoEngine
+from flask_admin import Admin, BaseView,expose
 
 #from models import User
 
