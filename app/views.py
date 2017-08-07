@@ -109,7 +109,7 @@ def edit_profile():
         g.user.about_me = form.about_me.data
         g.user.phone = form.phone.data
         #file_path = '/static/agent_photo/agent_default.gif'
-        file = form.fileName.file
+        file = form.fileName.data
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_AGENT_FOLDER'], filename))
@@ -188,7 +188,7 @@ def edit_post(pid=0):
             post.timestamp = datetime.utcnow()
             post.user_id = user.id
 
-        file = form.fileName.file
+        file = form.fileName.data
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_HOUSE_FOLDER'], filename))

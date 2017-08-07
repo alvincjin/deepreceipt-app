@@ -1,56 +1,57 @@
 <table class="table table-hover">
+    <tr>
+        <td width="70px">
+            <a href="{{url_for('home', pid=post.id)}}">
+                <img border="0" src="{{post.img}}" alt="Image is not Available."
+                     width="240" height="160"/>
+            </a>
+        </td>
 
-	<tr>
-		<td width="70px">
-			<a href="{{url_for('home', pid=post.id)}}"> 
-				<img border="0" src="{{post.img}}" alt="Image is not Available."
-				width="240" height="160" />	</a>
-			</td>
+        <td>
+            <legend>
+                <a href="{{url_for('home', pid=post.id)}}"><strong>{{ post.title }}</strong></a>
+            </legend>
 
-		<td><legend>
-				<a href="{{url_for('home', pid=post.id)}}"><strong>{{ post.title }}</strong></a>
-			</legend>
+            <table class="table table-hover">
+                <tr>
+                    <td>City: {{post.location}}</td>
+                    <td>Price: $ {{post.price}}</td>
+                    <td>Type: {{post.style}}</td>
+                </tr>
 
-			<table class="table table-hover">
-				<tr>
-					<td>City: {{post.location}}</td>
-					<td>Price: $ {{post.price}}</td>
-					<td>Type: {{post.style}}</td>
-				</tr>
+                <tr>
+                    <td>Bedroom: {{post.bedroom_no}}</td>
+                    <td>Bathroom: {{post.bathroom_no}}</td>
+                    <td>Garage/Park: {{post.garage_no}}</td>
+                </tr>
 
-				<tr>
-					<td>Bedroom: {{post.bedroom_no}}</td>
-					<td>Bathroom: {{post.bathroom_no}}</td>
-					<td>Garage/Park: {{post.garage_no}}</td>
-				</tr>
+                <!--<tr>Description: {{post.body}}
+                </tr>-->
+                <tr>&nbsp;&nbsp;Address: {{post.address}}</tr>
+                <tr>
+                    <td>
+                        <a href="{{url_for('user', nickname = post.author.nickname)}}">
+                            {{post.author.nickname}}
+                        </a>
+                        &nbsp;post {{momentjs(post.timestamp).fromNow()}}
+                    </td>
+                    <td>{{post.interested_user.count()}} people like it.</td>
 
-				<!--<tr>Description: {{post.body}}
-				</tr>-->
-				<tr>&nbsp;&nbsp;Address: {{post.address}}
-				 
-				</tr>
-				<tr>
-
-			  <td><a href="{{url_for('user', nickname = post.author.nickname)}}"> 
-			            {{post.author.nickname}}</a>
-						&nbsp;post {{momentjs(post.timestamp).fromNow()}}</td>
-					<td>{{post.interested_user.count()}} people like it.</td>
-
-		<td>{% if g.user.role %} {% if g.user.nickname == post.author.nickname %}
-		<a href="{{ url_for('edit_post', pid=post.id)}}"><i class="icon-edit"></i>Edit</a>
-		 <a href="{{ url_for('delete', id = post.id) }}"><i class="icon-trash"></i>Delete</a>
-		 {% endif %} {% else %}<a href="{{ url_for('bookmark', pid=post.id)}}"><i class="icon-thumbs-up"></i>Like </a>
-	
-						
-						{% endif %}
-
-					</td>
-
-
-				</tr>
-			</table></td>
-	</tr>
-
+                    <td>{% if g.user.role %}
+                        {% if g.user.nickname == post.author.nickname %}
+                        <a href="{{ url_for('edit_post', pid=post.id)}}"><i class="icon-edit"></i>Edit</a>
+                        <a href="{{ url_for('delete', id = post.id) }}"><i class="icon-trash"></i>Delete</a>
+                        {% endif %}
+                        {% else %}
+                        <a href="{{ url_for('bookmark', pid=post.id)}}">
+                            <i class="icon-thumbs-up"></i>Like
+                        </a>
+                        {% endif %}
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
 </table>
 
 

@@ -1,22 +1,22 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, BooleanField, TextAreaField, RadioField,SelectField,IntegerField, FileField,SubmitField,validators, ValidationError, PasswordField
-from wtforms.validators import Required, Length, NumberRange
+from wtforms.validators import DataRequired, Length, NumberRange
 from flask_wtf.recaptcha import RecaptchaField
 from app.models import User
 
 
 class EditForm(FlaskForm):
-    nickname = StringField('nickname', validators = [Required()])
+    nickname = StringField('nickname', validators = [DataRequired()])
     about_me = TextAreaField('about_me', validators = [Length(min = 0, max = 140)])
     phone = IntegerField('phone')
     fileName = FileField()
 
     def __init__(self, original_nickname, *args, **kwargs):
-        Form.__init__(self, *args, **kwargs)
+        FlaskForm.__init__(self, *args, **kwargs)
         self.original_nickname = original_nickname
         
     def validate(self):
-        if not Form.validate(self):
+        if not FlaskForm.validate(self):
             return False
         if self.nickname.data == self.original_nickname:
             return True
@@ -28,7 +28,7 @@ class EditForm(FlaskForm):
         return True
         
 class PostForm(FlaskForm):
-    title = StringField('Title', validators = [Required()])
+    title = StringField('Title', validators = [DataRequired()])
     style = SelectField('Property Type', choices=[('House', 'House'), ('Town House','Town House'), ('Condo', 'Condo'), ('Apartment','Apartment')])
     bedroom_no = IntegerField('Bedroom', validators = [NumberRange(min=1, max= 5)])
     bathroom_no = IntegerField('Bathroom', validators = [NumberRange(min=1, max= 5)])
@@ -42,17 +42,17 @@ class PostForm(FlaskForm):
     
 
 class ContactForm(FlaskForm):
-    name = StringField("Name",  [validators.Required("Please enter your name.")])
-    email = StringField("Email",  [validators.Required("Please enter your email address."), validators.Email("e.g. user@example.com")])
-    subject = StringField("Subject",  [validators.Required("Please enter a subject.")])
-    message = TextAreaField("Message",  [validators.Required("Please enter a message.")])
+    name = StringField("Name",  [validators.required("Please enter your name.")])
+    email = StringField("Email",  [validators.required("Please enter your email address."), validators.Email("e.g. user@example.com")])
+    subject = StringField("Subject",  [validators.required("Please enter a subject.")])
+    message = TextAreaField("Message",  [validators.required("Please enter a message.")])
     submit = SubmitField("Send")
 
 class SignupForm(FlaskForm):
-    firstname = StringField("First name",  [validators.Required("Please enter your first name.")])
-    lastname = StringField("Last name",  [validators.Required("Please enter your last name.")])
-    email = StringField("Email",  [validators.Required("Please enter your email address."), validators.Email("Please enter your email address.")])
-    password = PasswordField('Password', [validators.Required("Please enter a password.")])
+    firstname = StringField("First name",  [validators.required("Please enter your first name.")])
+    lastname = StringField("Last name",  [validators.required("Please enter your last name.")])
+    email = StringField("Email",  [validators.required("Please enter your email address."), validators.Email("Please enter your email address.")])
+    password = PasswordField('Password', [validators.required("Please enter a password.")])
     #Select fields keep a choices property which is a sequence of (value, label) pairs.
     user_role = SelectField('Role', choices=[('user', 'User'), ('agent', 'Agent')])
     recaptcha = RecaptchaField()
@@ -72,8 +72,8 @@ class SignupForm(FlaskForm):
             return True
 
 class SigninForm(FlaskForm):
-    email = StringField("Email",  [validators.Required("Please enter your email address."), validators.Email("Please enter your email address.")])
-    password = PasswordField('Password', [validators.Required("Please enter a password.")])
+    email = StringField("Email",  [validators.required("Please enter your email address."), validators.Email("Please enter your email address.")])
+    password = PasswordField('Password', [validators.required("Please enter a password.")])
     remember_me = BooleanField('Remember me', default = False)
     submit = SubmitField("Sign In")
     

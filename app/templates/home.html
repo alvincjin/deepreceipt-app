@@ -1,113 +1,99 @@
 <!-- extend base layout -->
-{% extends "base.html" %} {% block content %} {% include 'flash.html' %}
+{% extends "base.html" %}
+{% block content %}
+{% include 'flash.html' %}
 
 <table class="table">
+    <table>
+        <td width="70px"><img border="0" src="{{post.img}}" alt="Image is not Available."
+                              width="240" height="160"/>
+        </td>
+        <table>
+            <legend>
+                <strong>{{ post.title }}</strong>
+            </legend>
 
-	<tr>
-		<td width="70px"> <img
-				border="0" src="{{post.img}}" alt="Image is not Available."
-				width="240" height="160" />
-		</td>
+            <table class="table">
+                <tr>
+                    <td>City: {{post.location}}</td>
+                    <td>Price: $ {{post.price}}</td>
+                    <td>Type: {{post.style}}</td>
+                </tr>
 
-		<td><legend>
-				<strong>{{ post.title }}</strong>
-			</legend>
+                <tr>
+                    <td>Bedroom: {{post.bedroom_no}}</td>
+                    <td>Bathroom: {{post.bathroom_no}}</td>
+                    <td>Garage/Park: {{post.garage_no}}</td>
+                </tr>
 
-			<table class="table">
-				<tr>
-					<td>City: {{post.location}}</td>
-					<td>Price: $ {{post.price}}</td>
-					<td>Type: {{post.style}}</td>
-				</tr>
+                <tr>
+                    <!-- Button to trigger modal -->
+                    &nbsp;<i class="icon-map-marker"></i><a href="#myModal" class="text" data-toggle="modal">
+                    Map</a>: &nbsp;&nbsp; {{post.address}}
+                    {% include "map.html" %}
+                </tr>
 
-				<tr>
-					<td>Bedroom: {{post.bedroom_no}}</td>
-					<td>Bathroom: {{post.bathroom_no}}</td>
-					<td>Garage/Park: {{post.garage_no}}</td>
-				</tr>
+                <tr>
+                    <td> Date: {{momentjs(post.timestamp).fromNow()}}</td>
+                    <td>{{post.interested_user.count()}} people like it.</td>
 
-							
-				
-				<tr>
-				
-				 <!-- Button to trigger modal -->
-     			&nbsp;<i class="icon-map-marker"></i><a href="#myModal" class="text" data-toggle="modal">
-				Map</a>: &nbsp;&nbsp; {{post.address}}
-				{% include "map.html" %}
-							
-    			</tr>
-    				
-    				
-				
-				
-				
-				<tr>
+                    <td>{% if g.user.role %} {% if g.user.nickname == post.author.nickname %}
+                        <a href="{{ url_for('edit_post', pid=post.id)}}"><i class="icon-edit"></i>
+                            Edit</a>
+                        <a href="{{ url_for('delete', id = post.id) }}"><i class="icon-trash"></i>Delete</a>
+                        {% endif %}
+                        {% else %}<a href="{{ url_for('bookmark', pid=post.id)}}"><i class="icon-thumbs-up"></i>Like
+                        </a>
+                        {% endif %}
+                    </td>
+                </tr>
 
-			  		<td> Date: {{momentjs(post.timestamp).fromNow()}}</td>
-					<td>{{post.interested_user.count()}} people like it.</td>
+            </table>
+            <table class="table">
+                <tr>
+                    <td>Description: {{post.body}}</td>
+                </tr>
+                <table>
+                    </td>
+                    </tr>
+                </table>
+            </table>
 
-					<td>{% if g.user.role %} {% if g.user.nickname == post.author.nickname %}
-					<a href="{{ url_for('edit_post', pid=post.id)}}"><i class="icon-edit"></i>
-						Edit</a>
-		 			<a href="{{ url_for('delete', id = post.id) }}"><i class="icon-trash"></i>Delete</a>
-		 			{% endif %} 
-		 			{% else %}<a href="{{ url_for('bookmark', pid=post.id)}}"><i class="icon-thumbs-up"></i>Like </a>
-	
-					{% endif %}
+            <table class="table">
 
-					</td>
-				</tr>
+                <tr>
+                    <td>
+                        <div class="well well-middle" style="height: 110px;">
+                            <p>
+                                Contact <a href="{{url_for('user', nickname = post.author.nickname)}}">{{post.author.firstname}}&nbsp;{{post.author.lastname}}</a>
+                                to see it.
+                            </p>
 
-			</table>
-			<table class="table"><tr><td>Description: {{post.body}}</td></tr><table>
-		</td>
-	</tr>
+                            <p>Email: <a href="mailto:#">{{post.author.email}}</a></p>
+                            <p>Phone: {{post.author.phone}} </p>
+                            {% if post.author.about_me %}
+                            <p>About {{post.author.firstname}}: {{post.author.about_me}}</p>
+                            {% endif %}
+                        </div>
+                    </td>
 
+                    <td width="100px">
+                        {% if post.author.portrait %}
+                        <img border="0" src="{{post.author.portrait}}"
+                             alt="Image is not Available." width="100" height="100"
+                             class="img-polaroid"/> {% else %}
+                        <img border="0" src="/static/agent_photo/agent_default.gif"
+                             alt="Image is not Available."
+                             width="100"
+                             height="100"
+                             class="img-polaroid"/>
+                        {% endif %}
+                    </td>
+
+                </tr>
+            </table>
+
+        </table>
+    </table>
 </table>
-
-
-<table class="table">
-
-	<tr>
-		<td>
-			<div class="well well-middle" style="height: 110px;">
-
-				
-				<p>
-					Contact <a href="{{url_for('user', nickname = post.author.nickname)}}">{{post.author.firstname}}&nbsp;{{post.author.lastname}}</a> to see it.
-				</p>
-				
-				<p>Email:  <a href="mailto:#">{{post.author.email}}</a></p> 
-				<p>Phone: {{post.author.phone}} </p>
-				{% if post.author.about_me %}
-				<p>About {{post.author.firstname}}: {{post.author.about_me}}</p>
-				
-				
-				{% endif %} 
-				
-				
-			</div> 
-
-		</td>
-
-		<td width="100px">
-			
-				{% if post.author.portrait %} <img border="0" src="{{post.author.portrait}}"
-					alt="Image is not Available." width="100" height="100"
-					class="img-polaroid" /> {% else %} <img border="0"
-					src="/static/agent_photo/agent_default.gif"
-					alt="Image is not Available." width="100" height="100"
-					class="img-polaroid" /> {% endif %}
-			
-		</td>
-
-	</tr>
-
-</table>
-
-
 {% endblock %}
-
-
-
-
