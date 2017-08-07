@@ -67,7 +67,9 @@ def list_post(page = 1):
         
         pref = Preference(style = form.style.data, bedroom_no = form.bedroom_no.data, bathroom_no = form.bathroom_no.data, garage_no = form.garage_no.data, location = form.location.data, price = form.price.data)
 
-        results = Post.query.filter( Post.style == pref.style).filter(Post.location== pref.location).filter(Post.price >= 0.8*pref.price).filter(Post.price <= 1.2*pref.price).filter(Post.bedroom_no >= pref.bedroom_no-1).filter(Post.bedroom_no <= pref.bedroom_no+1).order_by(Post.timestamp.desc())
+        results = Post.query.filter( Post.style == pref.style).filter(Post.location== pref.location)\
+            .filter(Post.price >= 0.8 * float(pref.price)).filter(Post.price <= 1.2 * float(pref.price))\
+            .filter(Post.bedroom_no >= pref.bedroom_no-1).filter(Post.bedroom_no <= pref.bedroom_no+1).order_by(Post.timestamp.desc())
         
         posts = results.paginate(page, POSTS_PER_PAGE, False)
         flash('Find '+str(results.count())+' matching results')
@@ -208,7 +210,7 @@ def edit_post(pid=0):
         db.session.add(post)
         db.session.commit()
         #flash(post.address +" "+ post.location+" "+post.coordinate)
-        flask("Your post is alive now")
+        flash("Your post is alive now")
         return redirect(url_for('user', nickname = g.user.nickname))
 
     elif request.method != "POST":
