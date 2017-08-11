@@ -5,10 +5,11 @@ from flask_login import LoginManager
 from flask_openid import OpenID
 from flask_mail import Mail
 from config import basedir, ADMINS, MAIL_SERVER, MAIL_PORT, MAIL_USERNAME, MAIL_PASSWORD
-from momentjs import momentjs
+#from momentjs import momentjs
+from flask_moment import Moment
 from flask_mongoengine import MongoEngine
 from flask_admin import Admin, BaseView,expose
-
+from flask_bootstrap import Bootstrap
 #from models import User
 
 app = Flask(__name__)
@@ -16,8 +17,8 @@ app.config.from_object('config')
 db = SQLAlchemy(app)
 lm = LoginManager()
 lm.init_app(app)
-
-
+bootstrap = Bootstrap(app)
+moment = Moment(app)
 #setup admin
 admin = Admin(app, name = 'BigFace Inc.')
 
@@ -54,7 +55,7 @@ if not app.debug:
     app.logger.setLevel(logging.INFO)
     app.logger.info('microblog startup')
 
-app.jinja_env.globals['momentjs'] = momentjs
+#app.jinja_env.globals['momentjs'] = momentjs
 
 from app import views, models
 

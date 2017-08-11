@@ -1,11 +1,11 @@
 <!-- extend base layout -->
-{% extends "base.html" %} {% block content %} {% if
-g.user.is_authenticated() %}
+{% extends "base.html" %}
+{% block page_content %}
+{% if g.user.is_authenticated %}
 <h3>Hi, {{g.user.nickname}}!</h3>
 {% else %}
 <h3>Welcome Guest! Please Sign Up!</h3>
 {% endif %}
-{% include 'flash.html' %}
 
 {% for user in users.items %}
 <table class="table table-hover">

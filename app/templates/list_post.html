@@ -1,13 +1,12 @@
 <!-- extend base layout -->
 {% extends "base.html" %}
 
-{% block content %}
+{% block page_content %}
 {% if g.user.is_authenticated %}
 <h3>Hi, {{g.user.nickname}}!</h3>
 {% else %}
 <h3>Welcome Guest! Please Sign Up!</h3>
 {% endif %}
-{% include 'flash.html' %}
 
 {% if g.user.role %}
 <div class="well">

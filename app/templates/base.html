@@ -1,27 +1,33 @@
-<!DOCTYPE html>
-<html>
-<head>
-    {% if title %}
-    <title>{{title}} - Find the right for you</title>
-    {% else %}
-    <title>DeepFit</title>
-    {% endif %}
-    <link href="/static/css/bootstrap.min.css" rel="stylesheet" media="screen">
-    <link href="/static/css/bootstrap-responsive.min.css" rel="stylesheet">
-    <link href="/static/css/bootstrap.icon-large.min.css" rel="stylesheet">
-    <script src="http://code.jquery.com/jquery-latest.js"></script>
-    <script src="/static/js/bootstrap.min.js"></script>
-    <script src="/static/js/moment.min.js"></script>
+{% extends "bootstrap/base.html" %}
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-</head>
+{% block scripts %}
+{{ super() }}
+{{ moment.include_moment() }}
+{% endblock %}
 
-<body>
-<div class="container">
-    <div class="navbar">
-        <div class="navbar-inner">
-            <a class="brand" href="/">DeepFit</a>
-            <ul class="nav">
+{% block title %}Flasky{% endblock %}
+
+{% block head %}
+{{ super() }}
+<link rel="shortcut icon" href="{{ url_for('static', filename='dp.ico')}}" type="image/x-icon">
+<link rel="icon" href="{{ url_for('static', filename='dp.ico')}}" type="image/x-icon">
+{% endblock %}
+
+{% block navbar %}
+<div class="navbar navbar-inverse" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle"
+                    data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Flasky</a>
+        </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
                 <li><a href="{{ url_for('index') }}">Home</a></li>
                 <li><a href="{{ url_for('list_agent') }}">Find Agent</a></li>
                 <li><a href="{{ url_for('list_post') }}">Find Home</a></li>
@@ -35,9 +41,17 @@
             </ul>
         </div>
     </div>
-    <div class="row">
-        <div class="span12">{% block content %}{% endblock %}</div>
-    </div>
 </div>
-</body>
-</html>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    {% for message in get_flashed_messages() %}
+    <div class="alert alert-warning">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        {{ message }}
+    </div>
+    {% endfor %}
+    {% block page_content %}{% endblock %}
+</div>
+{% endblock %}

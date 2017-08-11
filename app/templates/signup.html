@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 
-{% block content %}
-{% include 'flash.html' %}
+{% block page_content %}
 
 {% for message in form.firstname.errors %}
 <div class="flash">{{ message }}</div>

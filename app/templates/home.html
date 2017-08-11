@@ -1,7 +1,6 @@
 <!-- extend base layout -->
 {% extends "base.html" %}
-{% block content %}
-{% include 'flash.html' %}
+{% block page_content %}
 
 <table class="table">
     <table>
@@ -34,7 +33,7 @@
                 </tr>
 
                 <tr>
-                    <td> Date: {{momentjs(post.timestamp).fromNow()}}</td>
+                    <td> Date: {{moment(post.timestamp).fromNow()}}</td>
                     <td>{{post.interested_user.count()}} people like it.</td>
 
                     <td>{% if g.user.role %} {% if g.user.nickname == post.author.nickname %}

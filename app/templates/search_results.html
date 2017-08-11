@@ -1,8 +1,7 @@
 <!-- extend base layout -->
 {% extends "base.html" %}
-{% block content %}
+{% block page_content %}
 <h1>Search results for "{{query}}":</h1>
-{% include 'flash.html' %}
 
 {% for post in results %}
 {% include 'post.html' %}
