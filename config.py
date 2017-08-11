@@ -26,8 +26,8 @@ MAIL_SERVER = 'smtp.googlemail.com'
 MAIL_PORT = 465
 MAIL_USE_TLS = False
 MAIL_USE_SSL = True
-MAIL_USERNAME = 'alvinuw'
-MAIL_PASSWORD = 'Changeit'
+MAIL_USERNAME = 'alvinuw' # the user name of above server to send emails
+MAIL_PASSWORD = ''
 
 # administrator list
 ADMINS = ['alvinuw@gmail.com']

@@ -32,7 +32,7 @@ def send_emails(subject, text_body, recipient):
 
 def follower_notification(followed, follower):
     send_email(
-        "[microblog] %s is now following you!" % follower.nickname,
+        "[DeepFit] %s is now following you!" % follower.nickname,
         ADMINS[0],
         [followed.email],
         render_template("follower_email.txt", user=followed, follower=follower),

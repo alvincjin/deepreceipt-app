@@ -8,7 +8,6 @@ from datetime import datetime
 from app.emails import follower_notification, send_emails
 from config import POSTS_PER_PAGE, MAX_SEARCH_RESULTS
 from werkzeug.utils import secure_filename
-from flask_mail import Message, Mail
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.contrib.fileadmin import FileAdmin
 from pygeocoder import Geocoder
@@ -67,11 +66,14 @@ def list_post(page = 1):
 
     if form.validate_on_submit() and user.role==0:
         
-        pref = Preference(style = form.style.data, bedroom_no = form.bedroom_no.data, bathroom_no = form.bathroom_no.data, garage_no = form.garage_no.data, location = form.location.data, price = form.price.data)
+        pref = Preference(style = form.style.data, bedroom_no = form.bedroom_no.data,
+                          bathroom_no = form.bathroom_no.data, garage_no = form.garage_no.data,
+                          location = form.location.data, price = form.price.data)
 
         results = Post.query.filter( Post.style == pref.style).filter(Post.location== pref.location)\
             .filter(Post.price >= 0.8 * float(pref.price)).filter(Post.price <= 1.2 * float(pref.price))\
-            .filter(Post.bedroom_no >= pref.bedroom_no-1).filter(Post.bedroom_no <= pref.bedroom_no+1).order_by(Post.timestamp.desc())
+            .filter(Post.bedroom_no >= pref.bedroom_no-1).filter(Post.bedroom_no <= pref.bedroom_no+1)\
+            .order_by(Post.timestamp.desc())
         
         posts = results.paginate(page, POSTS_PER_PAGE, False)
         flash('Find '+str(results.count())+' matching results')
@@ -143,7 +145,10 @@ def preference():
         
         pref = Preference.query.filter_by(user_id=user.id).first()
         if pref is None:
-            pref = Preference(style = form.style.data, bedroom_no = form.bedroom_no.data, bathroom_no=form.bathroom_no.data, garage_no=form.garage_no.data, location = form.location.data, price=form.price.data, user_id=user.id, notify=form.notify.data)
+            pref = Preference(style = form.style.data, bedroom_no = form.bedroom_no.data,
+                              bathroom_no=form.bathroom_no.data, garage_no=form.garage_no.data,
+                              location = form.location.data, price=form.price.data, user_id=user.id,
+                              notify=form.notify.data)
         else:
             pref.style = form.style.data
             pref.bedroom_no = form.bedroom_no.data
@@ -183,7 +188,8 @@ def edit_post(pid=0):
     if form.validate_on_submit() and user.role:
         
         if post == None:
-            post = Post(title = form.title.data, body = form.body.data, timestamp = datetime.utcnow(), user_id = user.id)
+            post = Post(title = form.title.data, body = form.body.data,
+                        timestamp = datetime.utcnow(), user_id = user.id)
         else:
             post.title = form.title.data
             post.body = form.body.data
@@ -313,7 +319,8 @@ def signup():
                role = 1
             else:
                role = 0
-            user = User(nickname, form.firstname.data, form.lastname.data, form.email.data, form.password.data, role)
+            user = User(nickname, form.firstname.data, form.lastname.data, form.email.data,
+                        form.password.data, role)
             user.role = role
             
             db.session.add(user)
@@ -330,7 +337,8 @@ def signup():
             ''' % (request.url_root,user.get_id())
 
             send_emails(subject, msg, user.email)
-            flash('Registration was successful. Please click the activation link sent to your email to activate your account.')
+            flash('Registration was successful. '
+                  'Please click the activation link sent to your email to activate your account.')
             return redirect(url_for('signin'))
 
     elif request.method == 'GET':
@@ -353,7 +361,8 @@ def signin():
             login_user(g.user, remember = remember_me)
             
             if g.user.active == False:
-                flash(' Your account has not been activated yet. To do this,please click on the activation link on the email we sent to you.')
+                flash(' Your account has not been activated yet. '
+                      'To do this,please click on the activation link on the email we sent to you.')
                 return render_template('signin.html', form=form)
         return redirect(request.args.get('next') or url_for('user', nickname = g.user.nickname))
                         

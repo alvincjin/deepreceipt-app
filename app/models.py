@@ -19,7 +19,8 @@ class User(db.Model):
     phone = db.Column(db.Integer)
    
     role = db.Column(db.SmallInteger, default = ROLE_USER)
-    posts = db.relationship('Post', order_by="Post.timestamp", backref = 'author', lazy = 'dynamic',cascade="all, delete, delete-orphan")
+    posts = db.relationship('Post', order_by="Post.timestamp", backref = 'author',
+                            lazy = 'dynamic',cascade="all, delete, delete-orphan")
     about_me = db.Column(db.String(140))
     last_seen = db.Column(db.DateTime)
     portrait = db.Column(db.String(140))
@@ -86,7 +87,8 @@ class Post(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     location = db.Column(db.String(140))
     price = db.Column(db.Integer)
-    interested_user = db.relationship('Favourite', backref = 'author', lazy = 'dynamic',cascade="all, delete, delete-orphan")
+    interested_user = db.relationship('Favourite', backref = 'author', lazy = 'dynamic',
+                                      cascade="all, delete, delete-orphan")
     style = db.Column(db.String(10), default = "house")
     bedroom_no = db.Column(db.Integer, default = 1)
     bathroom_no = db.Column(db.Integer, default = 1)
