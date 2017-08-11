@@ -2,7 +2,7 @@ from hashlib import md5
 from app import db
 from app import app
 import flask_whooshalchemy as whooshalchemy
-from werkzeug import generate_password_hash, check_password_hash
+from werkzeug.security import generate_password_hash, check_password_hash
 ROLE_USER = 0
 ROLE_ADMIN = 1
 

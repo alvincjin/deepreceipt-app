@@ -3,9 +3,9 @@ from flask import render_template, flash, redirect, session, url_for, request, g
 from flask_login import login_user, logout_user, current_user, login_required
 from app import app, db, lm, oid, admin
 from forms import *
-from models import User, ROLE_USER, ROLE_ADMIN, Post, Preference, Favourite
+from app.models import User, ROLE_USER, ROLE_ADMIN, Post, Preference, Favourite
 from datetime import datetime
-from emails import follower_notification, send_emails
+from app.emails import follower_notification, send_emails
 from config import POSTS_PER_PAGE, MAX_SEARCH_RESULTS
 from werkzeug.utils import secure_filename
 from flask_mail import Message, Mail
@@ -14,6 +14,8 @@ from flask_admin.contrib.fileadmin import FileAdmin
 from pygeocoder import Geocoder
 import os.path as op
 from config import ADMINS
+
+
 # file upload setting
 UPLOAD_AGENT_FOLDER = 'app/static/agent_photo'
 UPLOAD_HOUSE_FOLDER = 'app/static/house_photo'

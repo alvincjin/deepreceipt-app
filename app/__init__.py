@@ -27,14 +27,6 @@ lm.login_view ='signin'
 oid = OpenID(app, os.path.join(basedir, 'tmp'))
 mail = Mail(app)
 
-
-#connect('webdb')
-#db = MongoEngine(app)
-
-
-
-
-
 if not app.debug:
     import logging
     from logging.handlers import SMTPHandler
@@ -55,7 +47,6 @@ if not app.debug:
     app.logger.setLevel(logging.INFO)
     app.logger.info('microblog startup')
 
-#app.jinja_env.globals['momentjs'] = momentjs
-
-from app import views, models
+from app import views
+from app import models
 

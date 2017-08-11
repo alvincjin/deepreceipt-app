@@ -24,7 +24,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="/">Flasky</a>
+            <a class="navbar-brand" href="/">DeepFit</a>
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
@@ -52,6 +52,9 @@
         {{ message }}
     </div>
     {% endfor %}
-    {% block page_content %}{% endblock %}
+
+    <div class="row">
+        <div class="span12"> {% block page_content %}{% endblock %}</div>
+    </div>
 </div>
 {% endblock %}
