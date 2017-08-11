@@ -7,7 +7,7 @@ from models import User, ROLE_USER, ROLE_ADMIN, Post, Preference, Favourite
 from datetime import datetime
 from emails import follower_notification, send_emails
 from config import POSTS_PER_PAGE, MAX_SEARCH_RESULTS
-from werkzeug import secure_filename
+from werkzeug.utils import secure_filename
 from flask_mail import Message, Mail
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.contrib.fileadmin import FileAdmin
@@ -209,7 +209,6 @@ def edit_post(pid=0):
 
         db.session.add(post)
         db.session.commit()
-        #flash(post.address +" "+ post.location+" "+post.coordinate)
         flash("Your post is alive now")
         return redirect(url_for('user', nickname = g.user.nickname))
 

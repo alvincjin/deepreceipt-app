@@ -1,6 +1,8 @@
 <!-- extend base layout -->
 {% extends "base.html" %}
+
 {% block page_content %}
+
 {% if g.user.is_authenticated %}
 <h3>Hi, {{g.user.nickname}}!</h3>
 {% else %}
@@ -48,4 +50,5 @@
     <li class="next disabled"><a href="#">Next pages</a></li>
     {% endif %}
 </ul>
+
 {% endblock %}

@@ -128,6 +128,4 @@ class Preference(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     notify = db.Column(db.SmallInteger, default = 1)
 
-    
-            
-#whooshalchemy.whoosh_index(app, Post)
+whooshalchemy.whoosh_index(app, Post)
