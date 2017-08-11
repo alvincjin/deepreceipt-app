@@ -1,13 +1,13 @@
 <!-- extend base layout -->
 {% extends "base.html" %}
 
-{% block content %}
+{% block page_content %}
+
 {% if g.user.is_authenticated %}
 <h3>Hi, {{g.user.nickname}}!</h3>
 {% else %}
 <h3>Welcome Guest! Please Sign Up!</h3>
 {% endif %}
-{% include 'flash.html' %}
 
 {% if g.user.role %}
 <div class="well">
@@ -17,7 +17,9 @@
         </a>
     </p>
 </div>
+
 {% else %}
+
 <div class="accordion-group">
     <div class="accordion-heading">
         <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
@@ -63,7 +65,10 @@
 {% endif %}
 
 
-{% for post in posts.items %} {% include 'post.html' %} {% endfor %}
+{% for post in posts.items %}
+{% include 'post.html' %}
+{% endfor %}
+
 <ul class="pager">
     {% if posts.has_prev %}
     <li class="previous">
@@ -74,6 +79,7 @@
         <a href="#">Newer posts</a>
     </li>
     {% endif %}
+
     {% if posts.has_next %}
     <li class="next">
         <a href="{{ url_for('list_post', page = posts.next_num) }}">Older posts</a>

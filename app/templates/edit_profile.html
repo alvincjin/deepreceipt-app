@@ -1,8 +1,8 @@
 <!-- extend base layout -->
 {% extends "base.html" %}
-{% block content %}
+
+{% block page_content %}
 <legend>Set Home Preference</legend>
-{% include 'flash.html' %}
 
 <div class="well">
     <form class="form-horizontal" action="" method="POST" name="edit" enctype=multipart/form-data>
@@ -57,6 +57,5 @@
 
     </form>
 </div>
-</form>
 
 {% endblock %}

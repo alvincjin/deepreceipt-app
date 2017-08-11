@@ -8,6 +8,8 @@ Flask-OpenID==1.2.5
 Flask-SQLAlchemy==2.2
 Flask-WTF==0.14.2
 Flask-WhooshAlchemy==0.8
+Flask-Moment==0.5.1
+Flask-Bootstrap==3.3.7.0
 Jinja2==2.9.6
 MarkupSafe==1.0
 SQLAlchemy==1.1.13

@@ -1,18 +1,27 @@
 {% extends "base.html" %}
-{% block content %}
+
+{% block page_content %}
 
 <form action="{{ url_for('preference') }}" method=post>
     {{ form.hidden_tag() }}
 
     <fieldset>
         <legend>Set Your Peference</legend>
-        {{ form.location.label }} {{ form.location }} {{ form.price.label }}
-        {{ form.price(required="required") }} {{ form.style.label }} {{form.style}} {{
-        form.bedroom_no.label }} {{form.bedroom_no(id="sl1")}} {{ form.bathroom_no.label
-        }} {{form.bathroom_no(id="sl2")}} {{ form.garage_no.label }} {{form.garage_no(id="sl3")}}
 
-        <label class="checkbox"> {{ form.notify }} Send me emails for
-            matching items </label>
+        {{ form.location.label }}
+        {{ form.location }}
+        {{ form.price.label }}
+        {{ form.price(required="required") }}
+        {{ form.style.label }}
+        {{form.style}}
+        {{ form.bedroom_no.label }}
+        {{form.bedroom_no(id="sl1")}}
+        {{ form.bathroom_no.label }}
+        {{form.bathroom_no(id="sl2")}}
+        {{ form.garage_no.label }}
+        {{form.garage_no(id="sl3")}}
+
+        <label class="checkbox"> {{ form.notify }} Send me emails for matching items </label>
 
         <div class="control-group">
             <div class="controls">
@@ -45,7 +54,6 @@
             return 'Current value: '+value;
           }
         });
-
       
     });
 
