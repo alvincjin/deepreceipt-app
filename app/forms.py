@@ -22,11 +22,12 @@ class EditForm(FlaskForm):
             return True
         user = User.query.filter_by(nickname = self.nickname.data).first()
         
-        if user != None:
+        if user is not None:
             self.nickname.errors.append('This nickname is already in use. Please choose another one.')
             return False
         return True
-        
+
+
 class PostForm(FlaskForm):
     title = StringField('Title', validators = [DataRequired()])
     style = SelectField('Property Type', choices=[('House', 'House'), ('Town House','Town House'),
@@ -42,7 +43,6 @@ class PostForm(FlaskForm):
     price = IntegerField('Price', validators = [NumberRange(min=100000, max= 10000000)])
     address = StringField('Address')
     
-    
 
 class ContactForm(FlaskForm):
     name = StringField("Name",  [validators.required("Please enter your name.")])
@@ -52,13 +52,14 @@ class ContactForm(FlaskForm):
     message = TextAreaField("Message",  [validators.required("Please enter a message.")])
     submit = SubmitField("Send")
 
+
 class SignupForm(FlaskForm):
     firstname = StringField("First name",  [validators.required("Please enter your first name.")])
     lastname = StringField("Last name",  [validators.required("Please enter your last name.")])
     email = StringField("Email",  [validators.required("Please enter your email address."),
                                    validators.Email("Please enter your email address.")])
     password = PasswordField('Password', [validators.required("Please enter a password.")])
-    #Select fields keep a choices property which is a sequence of (value, label) pairs.
+    # Select fields keep a choices property which is a sequence of (value, label) pairs.
     user_role = SelectField('Role', choices=[('user', 'User'), ('agent', 'Agent')])
     recaptcha = RecaptchaField()
     submit = SubmitField("Create account")
@@ -76,9 +77,10 @@ class SignupForm(FlaskForm):
         else:
             return True
 
+
 class SigninForm(FlaskForm):
-    email = StringField("Email",  [validators.required("Please enter your email address."),
-                                   validators.Email("Please enter your email address.")])
+    email = StringField("Email", [validators.required("Please enter your email address."),
+                                  validators.Email("Please enter your email address.")])
     password = PasswordField('Password', [validators.required("Please enter a password.")])
     remember_me = BooleanField('Remember me', default = False)
     submit = SubmitField("Sign In")
@@ -96,6 +98,7 @@ class SigninForm(FlaskForm):
         else:
             self.email.errors.append("Invalid e-mail or password")
             return False
+
 
 class PeferForm(FlaskForm):
     style = SelectField('Property Type', choices=[('House', 'House'), ('Town House','Town House'),

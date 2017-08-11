@@ -17,11 +17,10 @@ lm = LoginManager()
 lm.init_app(app)
 bootstrap = Bootstrap(app)
 moment = Moment(app)
-#setup admin
 admin = Admin(app, name = 'DeepFit Inc.')
 
 
-lm.login_view ='signin'
+lm.login_view = 'signin'
 oid = OpenID(app, os.path.join(basedir, 'tmp'))
 mail = Mail(app)
 

@@ -9,6 +9,7 @@ ROLE_ADMIN = 1
 HOUSE = 0
 CONDO = 1
 
+
 class User(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     nickname = db.Column(db.String(64), unique = True)
@@ -31,12 +32,12 @@ class User(db.Model):
 
     @staticmethod
     def make_unique_nickname(nickname):
-        if User.query.filter_by(nickname = nickname).first() == None:
+        if User.query.filter_by(nickname = nickname).first() is None:
             return nickname
         version = 2
         while True:
             new_nickname = nickname + str(version)
-            if User.query.filter_by(nickname = new_nickname).first() == None:
+            if User.query.filter_by(nickname = new_nickname).first() is None:
                 break
             version += 1
         return new_nickname
@@ -59,7 +60,7 @@ class User(db.Model):
         return True
 
     def is_active(self):
-        if self.active == True:
+        if self.active is True:
             return True
         else:
             return False
@@ -74,8 +75,9 @@ class User(db.Model):
         return 'http://www.gravatar.com/avatar/' + md5(self.email).hexdigest() + '?d=mm&s=' + str(size)
      
     def __repr__(self):
-        return '<User %r>' % (self.nickname)    
-        
+        return '<User %r>' % self.nickname
+
+
 class Post(db.Model):
     __searchable__ = ['body']
     
@@ -89,6 +91,7 @@ class Post(db.Model):
     price = db.Column(db.Integer)
     interested_user = db.relationship('Favourite', backref = 'author', lazy = 'dynamic',
                                       cascade="all, delete, delete-orphan")
+
     style = db.Column(db.String(10), default = "house")
     bedroom_no = db.Column(db.Integer, default = 1)
     bathroom_no = db.Column(db.Integer, default = 1)
@@ -106,6 +109,8 @@ user_favourite_table = db.Table('Favourite', db.Model.metadata,
                                 )
 
 '''
+
+
 class Favourite(db.Model):
    
     id = db.Column(db.String(10), primary_key = True, unique = True)

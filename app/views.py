@@ -24,16 +24,17 @@ app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 app.config['UPLOAD_AGENT_FOLDER'] = UPLOAD_AGENT_FOLDER
 app.config['UPLOAD_HOUSE_FOLDER'] = UPLOAD_HOUSE_FOLDER
 
-
-#admin management setup
+# admin management setup
 admin.add_view(ModelView(User, db.session))
 admin.add_view(ModelView(Post, db.session))
 path = op.join(op.dirname(__file__), 'static')
 admin.add_view(FileAdmin(path, '/static/', name='Static Files'))
 
+
 @lm.user_loader
 def load_user(id):
     return User.query.get(int(id))
+
 
 @app.before_request
 def before_request():
@@ -47,6 +48,7 @@ def before_request():
 @app.errorhandler(404)
 def internal_error(error):
     return render_template('404.html'), 404
+
 
 @app.errorhandler(500)
 def internal_error(error):
@@ -83,27 +85,28 @@ def list_post(page = 1):
         posts = posts, form = form)
 
 
-@app.route('/list_agent', methods = ['GET', 'POST'])
-@app.route('/list_agent/<int:page>', methods = ['GET', 'POST'])
+@app.route('/list_agent', methods=['GET', 'POST'])
+@app.route('/list_agent/<int:page>', methods=['GET', 'POST'])
 def list_agent(page = 1):
     users = User.query.filter(User.role == 1).paginate(page, POSTS_PER_PAGE, False)
     
     return render_template('list_agent.html',
-        title = 'All the Agents',
-        users = users)
+        title='All the Agents',
+        users=users)
 
 
-@app.route('/', methods = ['GET'])
-@app.route('/index', methods = ['GET'])
+@app.route('/', methods=['GET'])
+@app.route('/index', methods=['GET'])
 def index():
     return render_template('index.html')
+
 
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
 
-@app.route('/edit_profile', methods = ['GET', 'POST'])
+@app.route('/edit_profile', methods=['GET', 'POST'])
 @login_required
 def edit_profile():
     
@@ -112,30 +115,30 @@ def edit_profile():
         g.user.nickname = form.nickname.data
         g.user.about_me = form.about_me.data
         g.user.phone = form.phone.data
-        #file_path = '/static/agent_photo/agent_default.gif'
+
         file = form.fileName.data
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_AGENT_FOLDER'], filename))
             file_path = os.path.join('/static/agent_photo/', filename)
-            #only when file is not none, change it, otherwise keep the previous one
+            # only when file is not none, change it, otherwise keep the previous one
             g.user.portrait = file_path
 
-        if g.user.portrait == None:
-            g.user.portrait =  '/static/agent_photo/agent_default.gif'
+        if g.user.portrait is None:
+            g.user.portrait = '/static/agent_photo/agent_default.gif'
 
         db.session.add(g.user)
         db.session.commit()
         flash('Your changes have been saved.')
-        return redirect(url_for('user', nickname = g.user.nickname))
+        return redirect(url_for('user', nickname=g.user.nickname))
+
     elif request.method != "POST":
-        
         form = EditForm(g.user.nickname, obj=g.user)
         
-    return render_template('edit_profile.html', form = form)
+    return render_template('edit_profile.html', form=form)
 
 
-@app.route('/preference', methods = ['GET', 'POST'])
+@app.route('/preference', methods=['GET', 'POST'])
 @login_required
 def preference():
 
@@ -158,7 +161,6 @@ def preference():
             pref.price = form.price.data
             pref.notify = form.notify.data
 
-
         db.session.add(pref)
         db.session.commit()
         flash('Your preference is set! ')
@@ -170,7 +172,6 @@ def preference():
         form = form)
 
 
-    
 def map_address(address):
     results = Geocoder.geocode(address)
     return str(results[0].coordinates).strip('()')
@@ -187,7 +188,7 @@ def edit_post(pid=0):
 
     if form.validate_on_submit() and user.role:
         
-        if post == None:
+        if post is None:
             post = Post(title = form.title.data, body = form.body.data,
                         timestamp = datetime.utcnow(), user_id = user.id)
         else:
@@ -201,10 +202,11 @@ def edit_post(pid=0):
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_HOUSE_FOLDER'], filename))
             file_path = os.path.join('/static/house_photo/', filename)
-            post.img = file_path #change only when a new img is given 
+            post.img = file_path # change only when a new img is given
 
-        if post.img == None:
+        if post.img is None:
             post.img = '/static/house_photo/house_default.jpeg'
+
         post.location = form.location.data
         post.price = form.price.data
         post.style = form.style.data
@@ -212,8 +214,7 @@ def edit_post(pid=0):
         post.bathroom_no = form.bathroom_no.data
         post.garage_no = form.garage_no.data
         post.address = form.address.data
-        
-        post.coordinate = map_address(post.address +" "+ post.location)
+        post.coordinate = map_address(post.address + " " + post.location)
 
         db.session.add(post)
         db.session.commit()
@@ -221,12 +222,9 @@ def edit_post(pid=0):
         return redirect(url_for('user', nickname = g.user.nickname))
 
     elif request.method != "POST":
-        
         form = PostForm(obj=post)
-    return render_template('new_post.html',
-        form = form)
 
-
+    return render_template('new_post.html', form=form)
 
 
 @app.route('/bookmark/<int:pid>', methods = ['GET', 'POST'])
@@ -235,8 +233,7 @@ def bookmark(pid):
 
     user = g.user 
     if Favourite.query.filter_by(id = str(user.id)+':'+str(pid)).first():
-        flash('The post was already in your collection.')  
-    
+        flash('The post was already in your collection.')
     else:
         fav = Favourite(user.id, pid)
         db.session.add(fav)
@@ -246,27 +243,23 @@ def bookmark(pid):
     return redirect(url_for('list_post'))
 
 
-
 @app.route('/contact', methods=['GET', 'POST'])
 def contact():
-  form = ContactForm()
+    form = ContactForm()
  
-  if request.method == 'POST':
-    if form.validate() == False:
-      flash('All fields are required.')
-      return render_template('contact.html', form=form)
-    else:
-      text_body = """
-      From: %s < %s > 
-
-      %s
-      """ % (form.name.data, form.email.data, form.message.data)
-      send_emails(form.subject.data, text_body, ADMINS[0])
-      return render_template('contact.html', success=True)
+    if request.method == 'POST':
+        if form.validate() is False:
+            flash('All fields are required.')
+            return render_template('contact.html', form=form)
+        else:
+            text_body = """
+            From: %s < %s >
+            %s """ % (form.name.data, form.email.data, form.message.data)
+            send_emails(form.subject.data, text_body, ADMINS[0])
+            return render_template('contact.html', success=True)
  
-  elif request.method == 'GET':
-    return render_template('contact.html', form=form)
-
+    elif request.method == 'GET':
+        return render_template('contact.html', form=form)
 
 
 @app.route('/home/<int:pid>')
@@ -282,7 +275,7 @@ def home(pid):
 def user(nickname, page = 1):
 
     user = User.query.filter_by(nickname = nickname).first()
-    if user == None:
+    if user is None:
         flash('User ' + nickname + ' not found.')
         return redirect(url_for('signin'))
     if user.role == 1:
@@ -294,11 +287,7 @@ def user(nickname, page = 1):
             idlist.append(fav.post_id)
         posts = Post.query.filter(Post.id.in_(idlist)).paginate(page, POSTS_PER_PAGE, False)
         
-    return render_template('user.html',
-        user = user,
-        posts = posts)
-       
-
+    return render_template('user.html', user = user, posts = posts)
 
 
 @app.route('/signup', methods=['GET', 'POST'])
@@ -309,7 +298,7 @@ def signup():
         return redirect(url_for('user', nickname = g.user.nickname))
     
     if request.method == 'POST':
-        if form.validate() == False:
+        if form.validate() is False:
             return render_template('signup.html', form=form)
         else:  
             nickname = form.email.data.split('@')[0]
@@ -319,8 +308,9 @@ def signup():
                role = 1
             else:
                role = 0
-            user = User(nickname, form.firstname.data, form.lastname.data, form.email.data,
-                        form.password.data, role)
+
+            user = User(nickname, form.firstname.data, form.lastname.data,
+                        form.email.data, form.password.data, role)
             user.role = role
             
             db.session.add(user)
@@ -353,14 +343,14 @@ def signin():
     form = SigninForm()
    
     if request.method == 'POST':
-        if form.validate() == False:
+        if form.validate() is False:
             return render_template('signin.html', form=form)
         else:
             g.user = User.query.filter_by(email = form.email.data.lower()).first()
             remember_me = form.remember_me.data
             login_user(g.user, remember = remember_me)
             
-            if g.user.active == False:
+            if g.user.active is False:
                 flash(' Your account has not been activated yet. '
                       'To do this,please click on the activation link on the email we sent to you.')
                 return render_template('signin.html', form=form)
@@ -370,11 +360,8 @@ def signin():
         return render_template('signin.html', form=form) 
 
 
-
-
 @app.route('/signout')
 def signout():
-
     logout_user()
     return redirect(url_for('index'))
 
@@ -383,7 +370,7 @@ def signout():
 @login_required
 def delete(id):
     post = Post.query.get(id)
-    if post == None:
+    if post is None:
         flash('Post not found.')
         return redirect(url_for('index'))
     if post.author.id != g.user.id:
@@ -398,7 +385,7 @@ def delete(id):
 @app.route('/user_activation/<key>/')
 def activate_user(key):
     user = User.query.get(key)
-    if user.active == True:
+    if user.active is True:
         flash('The account for this link has already been activated.')
         return redirect(url_for('signin'))
     user.active = True
