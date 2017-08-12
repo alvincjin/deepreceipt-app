@@ -121,14 +121,14 @@ def edit_profile():
             file_path = op.join(UPLOAD_AGENT_FOLDER, filename)
             file.save(file_path)
             # only when file is not none, change it, otherwise keep the previous one
-            g.user.portrait = file_path
+            g.user.portrait = op.join('/static/agent_photo/', filename)
 
         if g.user.portrait is None:
-            g.user.portrait = op.join(UPLOAD_AGENT_FOLDER, 'agent_default.gif')
+            g.user.portrait = op.join('/static/agent_photo/', 'agent_default.gif')
 
         db.session.add(g.user)
         db.session.commit()
-        flash('Your changes have been saved.')
+        flash('Your changes have been saved. ' + g.user.portrait)
         return redirect(url_for('.user', nickname=g.user.nickname))
 
     elif request.method != "POST":
@@ -200,10 +200,10 @@ def edit_post(pid=0):
             filename = secure_filename(file.filename)
             file_path = op.join(UPLOAD_HOUSE_FOLDER, filename)
             file.save(file_path)
-            post.img = file_path # change only when a new img is given
+            post.img = op.join('/static/house_photo/', filename)
 
         if post.img is None:
-            post.img = op.join(UPLOAD_HOUSE_FOLDER,'house_default.jpeg')
+            post.img = op.join('/static/house_photo/', 'house_default.jpeg')
 
         post.location = form.location.data
         post.price = form.price.data
@@ -216,7 +216,7 @@ def edit_post(pid=0):
 
         db.session.add(post)
         db.session.commit()
-        flash("Your post is alive now")
+        flash("Your post is alive now. ")
         return redirect(url_for('.user', nickname = g.user.nickname))
 
     elif request.method != "POST":
