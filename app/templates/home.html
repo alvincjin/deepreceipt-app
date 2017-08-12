@@ -38,11 +38,11 @@
                     <td>{{post.interested_user.count()}} people like it.</td>
 
                     <td>{% if g.user.role %} {% if g.user.nickname == post.author.nickname %}
-                        <a href="{{ url_for('edit_post', pid=post.id)}}"><i class="icon-edit"></i>
+                        <a href="{{ url_for('main.edit_post', pid=post.id)}}"><i class="icon-edit"></i>
                             Edit</a>
-                        <a href="{{ url_for('delete', id = post.id) }}"><i class="icon-trash"></i>Delete</a>
+                        <a href="{{ url_for('main.delete', id = post.id) }}"><i class="icon-trash"></i>Delete</a>
                         {% endif %}
-                        {% else %}<a href="{{ url_for('bookmark', pid=post.id)}}"><i class="icon-thumbs-up"></i>Like
+                        {% else %}<a href="{{ url_for('main.bookmark', pid=post.id)}}"><i class="icon-thumbs-up"></i>Like
                         </a>
                         {% endif %}
                     </td>
@@ -65,7 +65,7 @@
                     <td>
                         <div class="well well-middle" style="height: 110px;">
                             <p>
-                                Contact <a href="{{url_for('user', nickname = post.author.nickname)}}">{{post.author.firstname}}&nbsp;{{post.author.lastname}}</a>
+                                Contact <a href="{{url_for('main.user', nickname = post.author.nickname)}}">{{post.author.firstname}}&nbsp;{{post.author.lastname}}</a>
                                 to see it.
                             </p>
 

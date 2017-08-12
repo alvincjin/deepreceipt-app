@@ -10,7 +10,7 @@
 <div class="flash">{{ message }}</div>
 {% endfor %}
 
-<form action="{{ url_for('signin') }}" method=post>
+<form action="{{ url_for('main.signin') }}" method=post>
     {{ form.hidden_tag() }}
     <fieldset>
         <legend>Sign In</legend>
@@ -21,7 +21,7 @@
         <label class="checkbox"> {{ form.remember_me}}
             {{ form.remember_me.label }} </label>
         <p>
-            <a href="{{ url_for('signup') }}">Don't have an acount?</a>
+            <a href="{{ url_for('main.signup') }}">Don't have an acount?</a>
         </p>
         <button type="submit" class="btn btn-primary">Sign In</button>
     </fieldset>

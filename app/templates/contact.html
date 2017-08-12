@@ -6,7 +6,7 @@
 {% if success %}
 <p>Thank you for your message. We'll get back to you shortly.</p>
 {% else %}
-<form action="{{ url_for('contact') }}" method=post>
+<form action="{{ url_for('main.contact') }}" method=post>
     {{ form.hidden_tag() }}
 
     <fieldset>

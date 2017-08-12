@@ -1,7 +1,7 @@
 from hashlib import md5
 from app import db
-from app import app
 import flask_whooshalchemy as whooshalchemy
+from flask import current_app
 from werkzeug.security import generate_password_hash, check_password_hash
 ROLE_USER = 0
 ROLE_ADMIN = 1
@@ -135,4 +135,4 @@ class Preference(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     notify = db.Column(db.SmallInteger, default = 1)
 
-whooshalchemy.whoosh_index(app, Post)
+# whooshalchemy.whoosh_index(current_app, Post)

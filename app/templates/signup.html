@@ -18,7 +18,7 @@
 <div class="flash">{{ message }}</div>
 {% endfor %}
 
-<form action="{{ url_for('signup') }}" method=post>
+<form action="{{ url_for('main.signup') }}" method=post>
     {{ form.hidden_tag() }}
 
     <fieldset>

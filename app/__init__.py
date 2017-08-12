@@ -9,41 +9,46 @@ from flask_moment import Moment
 from flask_admin import Admin, BaseView,expose
 from flask_bootstrap import Bootstrap
 
-
-app = Flask(__name__)
-app.config.from_object('config')
-db = SQLAlchemy(app)
+db = SQLAlchemy()
+admin = Admin(name='DeepFit')
 lm = LoginManager()
-lm.init_app(app)
-bootstrap = Bootstrap(app)
-moment = Moment(app)
-admin = Admin(app, name = 'DeepFit Inc.')
+mail = Mail()
 
+def create_app():
+    app = Flask(__name__)
+    app.config.from_object('config')
+    db.init_app(app)
+    lm.init_app(app)
+    lm.login_view = 'signin'
+    bootstrap = Bootstrap(app)
+    moment = Moment(app)
+    admin.init_app(app)
+    mail.init_app(app)
+    # oid = OpenID(app, os.path.join(basedir, 'tmp'))
 
-lm.login_view = 'signin'
-oid = OpenID(app, os.path.join(basedir, 'tmp'))
-mail = Mail(app)
+    if not app.debug:
+        import logging
+        from logging.handlers import SMTPHandler
+        from logging.handlers import RotatingFileHandler
 
-if not app.debug:
-    import logging
-    from logging.handlers import SMTPHandler
-    credentials = None
-    if MAIL_USERNAME or MAIL_PASSWORD:
-        credentials = (MAIL_USERNAME, MAIL_PASSWORD)
-    mail_handler = SMTPHandler((MAIL_SERVER, MAIL_PORT), 'no-reply@' + MAIL_SERVER, ADMINS, 'DeepFit Webapp failure', credentials)
-    mail_handler.setLevel(logging.ERROR)
-    app.logger.addHandler(mail_handler)
+        credentials = None
+        if MAIL_USERNAME or MAIL_PASSWORD:
+            credentials = (MAIL_USERNAME, MAIL_PASSWORD)
+        mail_handler = SMTPHandler((MAIL_SERVER, MAIL_PORT), 'no-reply@' + MAIL_SERVER, ADMINS, 'DeepFit Webapp failure', credentials)
+        mail_handler.setLevel(logging.ERROR)
+        app.logger.addHandler(mail_handler)
 
-if not app.debug:
-    import logging
-    from logging.handlers import RotatingFileHandler
-    file_handler = RotatingFileHandler('tmp/deepfit-app.log', 'a', 1 * 1024 * 1024, 10)
-    file_handler.setLevel(logging.INFO)
-    file_handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'))
-    app.logger.addHandler(file_handler)
-    app.logger.setLevel(logging.INFO)
-    app.logger.info('DeepFit App Startup')
+        file_handler = RotatingFileHandler('tmp/deepfit-app.log', 'a', 1 * 1024 * 1024, 10)
+        file_handler.setLevel(logging.INFO)
+        file_handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'))
+        app.logger.addHandler(file_handler)
+        app.logger.setLevel(logging.INFO)
+        app.logger.info('DeepFit App Startup')
 
-from app import views
+        from .main import main as main_blueprint
+        app.register_blueprint(main_blueprint)
+        return app
+
+# from app import views
 from app import models
 

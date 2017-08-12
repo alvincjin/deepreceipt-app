@@ -24,18 +24,18 @@
                 {% endif %}
 
                 {% if g.user.nickname == user.nickname %}
-                <a href="{{url_for('edit_profile')}}">
+                <a href="{{url_for('main.edit_profile')}}">
                     <i class="icon-user"></i>Profile
                 </a>
                 {% if g.user.role==0 %}
                 &nbsp;&nbsp;&nbsp;
-                <a href="{{url_for('preference')}}">
+                <a href="{{url_for('main.preference')}}">
                     <i class="icon-check"></i>Preference
                 </a>
                 {% else %}
 
                 &nbsp;&nbsp;&nbsp;
-                <a href="{{url_for('edit_post', pid=0)}}">
+                <a href="{{url_for('main.edit_post', pid=0)}}">
                     <i class="icon-edit"></i>Post
                 </a>
 
@@ -111,7 +111,7 @@
 <ul class="pager">
     {% if posts.has_prev %}
     <li class="previous">
-        <a href="{{ url_for('user', nickname = user.nickname, page = posts.prev_num) }}">Newer posts</a>
+        <a href="{{ url_for('main.user', nickname = user.nickname, page = posts.prev_num) }}">Newer posts</a>
     </li>
     {% else %}
     <li class="previous disabled">
@@ -121,7 +121,7 @@
 
     {% if posts.has_next %}
     <li class="next">
-        <a href="{{ url_for('user', nickname = user.nickname, page = posts.next_num) }}">Older posts</a>
+        <a href="{{ url_for('main.user', nickname = user.nickname, page = posts.next_num) }}">Older posts</a>
     </li>
     {% else %}
     <li class="next disabled"><a href="#">Older posts</a></li>

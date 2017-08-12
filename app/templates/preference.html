@@ -2,7 +2,7 @@
 
 {% block page_content %}
 
-<form action="{{ url_for('preference') }}" method=post>
+<form action="{{ url_for('main.preference') }}" method=post>
     {{ form.hidden_tag() }}
 
     <fieldset>

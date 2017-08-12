@@ -1,4 +1,4 @@
-Real Estate Web App
+DeepFit Web App
 =========
 This is a web app for real estate sellers and buyers.
 Dealers and sellers can list houses on this web app.

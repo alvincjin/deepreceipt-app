@@ -26,7 +26,7 @@
 
         <td>
             <div class="page-header">
-                <h4><a href="{{url_for('user', nickname = user.nickname)}}"> {{ user.nickname }}</a></h4>
+                <h4><a href="{{url_for('main.user', nickname = user.nickname)}}"> {{ user.nickname }}</a></h4>
             </div>
             <p>{{user.about_me}}</p>
         </td>
@@ -38,14 +38,14 @@
 <ul class="pager">
     {% if users.has_prev %}
     <li class="previous">
-        <a href="{{ url_for('list_agent', page = users.prev_num) }}">Prev pages</a></li>
+        <a href="{{ url_for('main.list_agent', page = users.prev_num) }}">Prev pages</a></li>
     {% else %}
     <li class="previous disabled"><a href="#">Prev pages</a></li>
     {% endif%}
 
     {% if users.has_next %}
     <li class="next">
-        <a href="{{ url_for('list_agent', page = users.next_num) }}">Next pages</a></li>
+        <a href="{{ url_for('main.list_agent', page = users.next_num) }}">Next pages</a></li>
     {% else %}
     <li class="next disabled"><a href="#">Next pages</a></li>
     {% endif %}
