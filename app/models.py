@@ -134,5 +134,3 @@ class Preference(db.Model):
     price = db.Column(db.Integer)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     notify = db.Column(db.SmallInteger, default = 1)
-
-# whooshalchemy.whoosh_index(current_app, Post)

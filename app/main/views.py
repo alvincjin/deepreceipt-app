@@ -35,24 +35,13 @@ def load_user(id):
     return User.query.get(int(id))
 
 
-@main.before_request
+@main.before_app_request
 def before_request():
     g.user = current_user
     if g.user.is_authenticated:
         g.user.last_seen = datetime.utcnow()
         db.session.add(g.user)
         db.session.commit()
-
-
-@main.errorhandler(404)
-def internal_error(error):
-    return render_template('404.html'), 404
-
-
-@main.errorhandler(500)
-def internal_error(error):
-    db.session.rollback()
-    return render_template('500.html'), 500
 
 
 @main.route('/list_post', methods = ['GET', 'POST'])
@@ -86,6 +75,7 @@ def list_post(page = 1):
 
 @main.route('/list_agent', methods=['GET', 'POST'])
 @main.route('/list_agent/<int:page>', methods=['GET', 'POST'])
+@login_required
 def list_agent(page = 1):
     users = User.query.filter(User.role == 1).paginate(page, POSTS_PER_PAGE, False)
     
@@ -128,7 +118,7 @@ def edit_profile():
 
         db.session.add(g.user)
         db.session.commit()
-        flash('Your changes have been saved. ' + g.user.portrait)
+        flash('Your changes have been saved.')
         return redirect(url_for('.user', nickname=g.user.nickname))
 
     elif request.method != "POST":
@@ -321,7 +311,7 @@ def signup():
             Please click the following activation link to confirm:
             %suser_activation/%s/
             Thank you.
-            Big Face Inc.
+            DeepFit Inc.
             ''' % (request.url_root,user.get_id())
 
             send_emails(subject, msg, user.email)
@@ -361,6 +351,7 @@ def signin():
 @main.route('/signout')
 def signout():
     logout_user()
+    flash('You have been logged out.')
     return redirect(url_for('.index'))
 
 
