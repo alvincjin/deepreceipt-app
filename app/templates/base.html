@@ -28,15 +28,15 @@
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
-                <li><a href="{{ url_for('index') }}">Home</a></li>
-                <li><a href="{{ url_for('list_agent') }}">Find Agent</a></li>
-                <li><a href="{{ url_for('list_post') }}">Find Home</a></li>
-                <li><a href="{{ url_for('contact') }}">Contact</a></li>
+                <li><a href="{{ url_for('main.index') }}">Home</a></li>
+                <li><a href="{{ url_for('main.list_agent') }}">Find Agent</a></li>
+                <li><a href="{{ url_for('main.list_post') }}">Find Home</a></li>
+                <li><a href="{{ url_for('main.contact') }}">Contact</a></li>
                 {% if g.user.is_authenticated %}
-                <li><a href="{{ url_for('user', nickname = g.user.nickname) }}">MyProfile</a></li>
-                <li><a href="{{ url_for('signout') }}">Sign Out</a></li>
+                <li><a href="{{ url_for('main.user', nickname = g.user.nickname) }}">MyProfile</a></li>
+                <li><a href="{{ url_for('main.signout') }}">Sign Out</a></li>
                 {% else %}
-                <li><a href="{{ url_for('signin') }}">Sign In</a></li>
+                <li><a href="{{ url_for('main.signin') }}">Sign In</a></li>
                 {% endif %}
             </ul>
         </div>

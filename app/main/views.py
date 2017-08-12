@@ -1,8 +1,9 @@
 import os
-from flask import render_template, flash, redirect, session, url_for, request, g
+from flask import render_template, current_app, flash, redirect, session, url_for, request, g
 from flask_login import login_user, logout_user, current_user, login_required
-from app import app, db, lm, oid, admin
-from forms import *
+from app import db, lm, admin
+from . forms import *
+from . import main
 from app.models import User, ROLE_USER, ROLE_ADMIN, Post, Preference, Favourite
 from datetime import datetime
 from app.emails import follower_notification, send_emails
@@ -19,23 +20,22 @@ from config import ADMINS
 UPLOAD_AGENT_FOLDER = 'app/static/agent_photo'
 UPLOAD_HOUSE_FOLDER = 'app/static/house_photo'
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
-
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
-app.config['UPLOAD_AGENT_FOLDER'] = UPLOAD_AGENT_FOLDER
-app.config['UPLOAD_HOUSE_FOLDER'] = UPLOAD_HOUSE_FOLDER
+MAX_CONTENT_LENGTH = 16 * 1024 * 1024
 
 
-#admin management setup
+# admin management setup
 admin.add_view(ModelView(User, db.session))
 admin.add_view(ModelView(Post, db.session))
-path = op.join(op.dirname(__file__), 'static')
+path = op.join(os.path.abspath(__file__ + "/../../"), 'static')  # need to get parent path of this code
 admin.add_view(FileAdmin(path, '/static/', name='Static Files'))
+
 
 @lm.user_loader
 def load_user(id):
     return User.query.get(int(id))
 
-@app.before_request
+
+@main.before_request
 def before_request():
     g.user = current_user
     if g.user.is_authenticated:
@@ -44,18 +44,19 @@ def before_request():
         db.session.commit()
 
 
-@app.errorhandler(404)
+@main.errorhandler(404)
 def internal_error(error):
     return render_template('404.html'), 404
 
-@app.errorhandler(500)
+
+@main.errorhandler(500)
 def internal_error(error):
     db.session.rollback()
     return render_template('500.html'), 500
 
 
-@app.route('/list_post', methods = ['GET', 'POST'])
-@app.route('/list_post/<int:page>', methods = ['GET', 'POST'])
+@main.route('/list_post', methods = ['GET', 'POST'])
+@main.route('/list_post/<int:page>', methods = ['GET', 'POST'])
 @login_required
 def list_post(page = 1):
     
@@ -83,27 +84,28 @@ def list_post(page = 1):
         posts = posts, form = form)
 
 
-@app.route('/list_agent', methods = ['GET', 'POST'])
-@app.route('/list_agent/<int:page>', methods = ['GET', 'POST'])
+@main.route('/list_agent', methods=['GET', 'POST'])
+@main.route('/list_agent/<int:page>', methods=['GET', 'POST'])
 def list_agent(page = 1):
     users = User.query.filter(User.role == 1).paginate(page, POSTS_PER_PAGE, False)
     
     return render_template('list_agent.html',
-        title = 'All the Agents',
-        users = users)
+        title='All the Agents',
+        users=users)
 
 
-@app.route('/', methods = ['GET'])
-@app.route('/index', methods = ['GET'])
+@main.route('/', methods=['GET'])
+@main.route('/index', methods=['GET'])
 def index():
     return render_template('index.html')
+
 
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
 
-@app.route('/edit_profile', methods = ['GET', 'POST'])
+@main.route('/edit_profile', methods=['GET', 'POST'])
 @login_required
 def edit_profile():
     
@@ -112,30 +114,30 @@ def edit_profile():
         g.user.nickname = form.nickname.data
         g.user.about_me = form.about_me.data
         g.user.phone = form.phone.data
-        #file_path = '/static/agent_photo/agent_default.gif'
+
         file = form.fileName.data
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_AGENT_FOLDER'], filename))
-            file_path = os.path.join('/static/agent_photo/', filename)
-            #only when file is not none, change it, otherwise keep the previous one
+            file_path = op.join(UPLOAD_AGENT_FOLDER, filename)
+            file.save(file_path)
+            # only when file is not none, change it, otherwise keep the previous one
             g.user.portrait = file_path
 
-        if g.user.portrait == None:
-            g.user.portrait =  '/static/agent_photo/agent_default.gif'
+        if g.user.portrait is None:
+            g.user.portrait = op.join(UPLOAD_AGENT_FOLDER, 'agent_default.gif')
 
         db.session.add(g.user)
         db.session.commit()
         flash('Your changes have been saved.')
-        return redirect(url_for('user', nickname = g.user.nickname))
+        return redirect(url_for('.user', nickname=g.user.nickname))
+
     elif request.method != "POST":
-        
         form = EditForm(g.user.nickname, obj=g.user)
         
-    return render_template('edit_profile.html', form = form)
+    return render_template('edit_profile.html', form=form)
 
 
-@app.route('/preference', methods = ['GET', 'POST'])
+@main.route('/preference', methods=['GET', 'POST'])
 @login_required
 def preference():
 
@@ -158,26 +160,23 @@ def preference():
             pref.price = form.price.data
             pref.notify = form.notify.data
 
-
         db.session.add(pref)
         db.session.commit()
         flash('Your preference is set! ')
-        return redirect(url_for('user', nickname = user.nickname))
+        return redirect(url_for('.user', nickname = user.nickname))
     elif request.method != "POST" and user.pref is not None:
        form = PeferForm(obj=user.pref)
        
-    return render_template('preference.html',
-        form = form)
+    return render_template('preference.html', form = form)
 
 
-    
 def map_address(address):
     results = Geocoder.geocode(address)
     return str(results[0].coordinates).strip('()')
 
 
-@app.route('/edit_post/', methods = ['GET', 'POST'])
-@app.route('/edit_post/<int:pid>', methods = ['GET', 'POST'])
+@main.route('/edit_post/', methods = ['GET', 'POST'])
+@main.route('/edit_post/<int:pid>', methods = ['GET', 'POST'])
 @login_required
 def edit_post(pid=0):
 
@@ -187,7 +186,7 @@ def edit_post(pid=0):
 
     if form.validate_on_submit() and user.role:
         
-        if post == None:
+        if post is None:
             post = Post(title = form.title.data, body = form.body.data,
                         timestamp = datetime.utcnow(), user_id = user.id)
         else:
@@ -199,12 +198,13 @@ def edit_post(pid=0):
         file = form.fileName.data
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_HOUSE_FOLDER'], filename))
-            file_path = os.path.join('/static/house_photo/', filename)
-            post.img = file_path #change only when a new img is given 
+            file_path = op.join(UPLOAD_HOUSE_FOLDER, filename)
+            file.save(file_path)
+            post.img = file_path # change only when a new img is given
 
-        if post.img == None:
-            post.img = '/static/house_photo/house_default.jpeg'
+        if post.img is None:
+            post.img = op.join(UPLOAD_HOUSE_FOLDER,'house_default.jpeg')
+
         post.location = form.location.data
         post.price = form.price.data
         post.style = form.style.data
@@ -212,79 +212,70 @@ def edit_post(pid=0):
         post.bathroom_no = form.bathroom_no.data
         post.garage_no = form.garage_no.data
         post.address = form.address.data
-        
-        post.coordinate = map_address(post.address +" "+ post.location)
+        post.coordinate = map_address(post.address + " " + post.location)
 
         db.session.add(post)
         db.session.commit()
         flash("Your post is alive now")
-        return redirect(url_for('user', nickname = g.user.nickname))
+        return redirect(url_for('.user', nickname = g.user.nickname))
 
     elif request.method != "POST":
-        
         form = PostForm(obj=post)
-    return render_template('new_post.html',
-        form = form)
+
+    return render_template('new_post.html', form=form)
 
 
-
-
-@app.route('/bookmark/<int:pid>', methods = ['GET', 'POST'])
+@main.route('/bookmark/<int:pid>', methods = ['GET', 'POST'])
 @login_required
 def bookmark(pid):
 
     user = g.user 
     if Favourite.query.filter_by(id = str(user.id)+':'+str(pid)).first():
-        flash('The post was already in your collection.')  
-    
+        flash('The post was already in your collection.')
     else:
         fav = Favourite(user.id, pid)
         db.session.add(fav)
         db.session.commit()
         flash('The post was added in your collection.')       
     
-    return redirect(url_for('list_post'))
+    return redirect(url_for('.list_post'))
 
 
-
-@app.route('/contact', methods=['GET', 'POST'])
+@main.route('/contact', methods=['GET', 'POST'])
 def contact():
-  form = ContactForm()
+    form = ContactForm()
  
-  if request.method == 'POST':
-    if form.validate() == False:
-      flash('All fields are required.')
-      return render_template('contact.html', form=form)
-    else:
-      text_body = """
-      From: %s < %s > 
-
-      %s
-      """ % (form.name.data, form.email.data, form.message.data)
-      send_emails(form.subject.data, text_body, ADMINS[0])
-      return render_template('contact.html', success=True)
+    if request.method == 'POST':
+        if form.validate() is False:
+            flash('All fields are required.')
+            return render_template('contact.html', form=form)
+        else:
+            text_body = """
+            From: %s < %s >
+            %s """ % (form.name.data, form.email.data, form.message.data)
+            send_emails(form.subject.data, text_body, ADMINS[0])
+            return render_template('contact.html', success=True)
  
-  elif request.method == 'GET':
-    return render_template('contact.html', form=form)
+    elif request.method == 'GET':
+        return render_template('contact.html', form=form)
 
 
-
-@app.route('/home/<int:pid>')
+@main.route('/home/<int:pid>')
 @login_required
 def home(pid):
     post = Post.query.get(pid)
     return render_template("home.html", post=post)
 
 
-@app.route('/user/<nickname>')
-@app.route('/user/<nickname>/<int:page>')
+@main.route('/user/<nickname>')
+@main.route('/user/<nickname>/<int:page>')
 @login_required
 def user(nickname, page = 1):
 
     user = User.query.filter_by(nickname = nickname).first()
-    if user == None:
+    if user is None:
         flash('User ' + nickname + ' not found.')
-        return redirect(url_for('signin'))
+        return redirect(url_for('.signin'))
     if user.role == 1:
         posts = user.posts.paginate(page, POSTS_PER_PAGE, False)
     else:
@@ -294,22 +285,18 @@ def user(nickname, page = 1):
             idlist.append(fav.post_id)
         posts = Post.query.filter(Post.id.in_(idlist)).paginate(page, POSTS_PER_PAGE, False)
         
-    return render_template('user.html',
-        user = user,
-        posts = posts)
-       
+    return render_template('user.html', user = user, posts = posts)
 
 
-
-@app.route('/signup', methods=['GET', 'POST'])
+@main.route('/signup', methods=['GET', 'POST'])
 def signup():
     form = SignupForm()
 
     if g.user is not None and g.user.is_authenticated:
-        return redirect(url_for('user', nickname = g.user.nickname))
+        return redirect(url_for('.user', nickname = g.user.nickname))
     
     if request.method == 'POST':
-        if form.validate() == False:
+        if form.validate() is False:
             return render_template('signup.html', form=form)
         else:  
             nickname = form.email.data.split('@')[0]
@@ -319,8 +306,9 @@ def signup():
                role = 1
             else:
                role = 0
-            user = User(nickname, form.firstname.data, form.lastname.data, form.email.data,
-                        form.password.data, role)
+
+            user = User(nickname, form.firstname.data, form.lastname.data,
+                        form.email.data, form.password.data, role)
             user.role = role
             
             db.session.add(user)
@@ -339,73 +327,70 @@ def signup():
             send_emails(subject, msg, user.email)
             flash('Registration was successful. '
                   'Please click the activation link sent to your email to activate your account.')
-            return redirect(url_for('signin'))
+            return redirect(url_for('.signin'))
 
     elif request.method == 'GET':
         return render_template('signup.html', form=form)
 
 
-@app.route('/signin', methods=['GET', 'POST'])
+@main.route('/signin', methods=['GET', 'POST'])
 def signin():
         
     if g.user is not None and g.user.is_authenticated:
-        return redirect(url_for('user', nickname = g.user.nickname))
+        return redirect(url_for('.user', nickname = g.user.nickname))
     form = SigninForm()
    
     if request.method == 'POST':
-        if form.validate() == False:
+        if form.validate() is False:
             return render_template('signin.html', form=form)
         else:
             g.user = User.query.filter_by(email = form.email.data.lower()).first()
             remember_me = form.remember_me.data
             login_user(g.user, remember = remember_me)
             
-            if g.user.active == False:
+            if g.user.active is False:
                 flash(' Your account has not been activated yet. '
                       'To do this,please click on the activation link on the email we sent to you.')
                 return render_template('signin.html', form=form)
-        return redirect(request.args.get('next') or url_for('user', nickname = g.user.nickname))
+        return redirect(request.args.get('next') or url_for('.user', nickname = g.user.nickname))
                         
     elif request.method == 'GET':
         return render_template('signin.html', form=form) 
 
 
-
-
-@app.route('/signout')
+@main.route('/signout')
 def signout():
-
     logout_user()
-    return redirect(url_for('index'))
+    return redirect(url_for('.index'))
 
 
-@app.route('/delete/<int:id>')
+@main.route('/delete/<int:id>')
 @login_required
 def delete(id):
     post = Post.query.get(id)
-    if post == None:
+    if post is None:
         flash('Post not found.')
-        return redirect(url_for('index'))
+        return redirect(url_for('.index'))
     if post.author.id != g.user.id:
         flash('You cannot delete this post.')
-        return redirect(url_for('list_post'))
+        return redirect(url_for('.list_post'))
     db.session.delete(post)
     db.session.commit()
     flash('Your post has been deleted.')
-    return redirect(url_for('list_post'))
+    return redirect(url_for('.list_post'))
     
 
-@app.route('/user_activation/<key>/')
+@main.route('/user_activation/<key>/')
 def activate_user(key):
     user = User.query.get(key)
-    if user.active == True:
+    if user.active is True:
         flash('The account for this link has already been activated.')
-        return redirect(url_for('signin'))
+        return redirect(url_for('.signin'))
     user.active = True
     db.session.add(user)
     db.session.commit()
     flash('Your account has been activated. You may now login.')
-    return redirect(url_for('signin'))
+    return redirect(url_for('.signin'))
 
 
 class switch(object):
