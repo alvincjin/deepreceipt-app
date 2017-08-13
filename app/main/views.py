@@ -35,24 +35,13 @@ def load_user(id):
     return User.query.get(int(id))
 
 
-@main.before_request
+@main.before_app_request
 def before_request():
     g.user = current_user
     if g.user.is_authenticated:
         g.user.last_seen = datetime.utcnow()
         db.session.add(g.user)
         db.session.commit()
-
-
-@main.errorhandler(404)
-def internal_error(error):
-    return render_template('404.html'), 404
-
-
-@main.errorhandler(500)
-def internal_error(error):
-    db.session.rollback()
-    return render_template('500.html'), 500
 
 
 @main.route('/list_post', methods = ['GET', 'POST'])
@@ -86,6 +75,7 @@ def list_post(page = 1):
 
 @main.route('/list_agent', methods=['GET', 'POST'])
 @main.route('/list_agent/<int:page>', methods=['GET', 'POST'])
+@login_required
 def list_agent(page = 1):
     users = User.query.filter(User.role == 1).paginate(page, POSTS_PER_PAGE, False)
     
@@ -121,10 +111,10 @@ def edit_profile():
             file_path = op.join(UPLOAD_AGENT_FOLDER, filename)
             file.save(file_path)
             # only when file is not none, change it, otherwise keep the previous one
-            g.user.portrait = file_path
+            g.user.portrait = op.join('/static/agent_photo/', filename)
 
         if g.user.portrait is None:
-            g.user.portrait = op.join(UPLOAD_AGENT_FOLDER, 'agent_default.gif')
+            g.user.portrait = op.join('/static/agent_photo/', 'agent_default.gif')
 
         db.session.add(g.user)
         db.session.commit()
@@ -200,10 +190,10 @@ def edit_post(pid=0):
             filename = secure_filename(file.filename)
             file_path = op.join(UPLOAD_HOUSE_FOLDER, filename)
             file.save(file_path)
-            post.img = file_path # change only when a new img is given
+            post.img = op.join('/static/house_photo/', filename)
 
         if post.img is None:
-            post.img = op.join(UPLOAD_HOUSE_FOLDER,'house_default.jpeg')
+            post.img = op.join('/static/house_photo/', 'house_default.jpeg')
 
         post.location = form.location.data
         post.price = form.price.data
@@ -216,7 +206,7 @@ def edit_post(pid=0):
 
         db.session.add(post)
         db.session.commit()
-        flash("Your post is alive now")
+        flash("Your post is alive now. ")
         return redirect(url_for('.user', nickname = g.user.nickname))
 
     elif request.method != "POST":
@@ -321,7 +311,7 @@ def signup():
             Please click the following activation link to confirm:
             %suser_activation/%s/
             Thank you.
-            Big Face Inc.
+            DeepFit Inc.
             ''' % (request.url_root,user.get_id())
 
             send_emails(subject, msg, user.email)
@@ -361,6 +351,7 @@ def signin():
 @main.route('/signout')
 def signout():
     logout_user()
+    flash('You have been logged out.')
     return redirect(url_for('.index'))
 
 
