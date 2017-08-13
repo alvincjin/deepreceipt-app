@@ -19,7 +19,7 @@ def create_app():
     app.config.from_object('config')
     db.init_app(app)
     lm.init_app(app)
-    lm.login_view = 'signin'
+    lm.login_view = 'main.signin'  # need right namespace
     bootstrap = Bootstrap(app)
     moment = Moment(app)
     admin.init_app(app)
