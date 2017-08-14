@@ -3,14 +3,20 @@ from app import db
 import flask_whooshalchemy as whooshalchemy
 from flask import current_app
 from werkzeug.security import generate_password_hash, check_password_hash
+from . import lm
+
 ROLE_USER = 0
 ROLE_ADMIN = 1
 
 HOUSE = 0
 CONDO = 1
 
+@lm.user_loader
+def load_user(id):
+    return User.query.get(int(id))
 
 class User(db.Model):
+    __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key = True)
     nickname = db.Column(db.String(64), unique = True)
     firstname = db.Column(db.String(100))
@@ -49,10 +55,12 @@ class User(db.Model):
         self.email = email.lower()
         self.set_password(password)
         self.role = role
-     
+
+
     def set_password(self, password):
         self.pwdhash = generate_password_hash(password)
-   
+
+
     def check_password(self, password):
         return check_password_hash(self.pwdhash, password)
    

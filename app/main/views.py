@@ -30,9 +30,7 @@ path = op.join(os.path.abspath(__file__ + "/../../"), 'static')  # need to get p
 admin.add_view(FileAdmin(path, '/static/', name='Static Files'))
 
 
-@lm.user_loader
-def load_user(id):
-    return User.query.get(int(id))
+
 
 
 @main.before_app_request
@@ -332,7 +330,7 @@ def signin():
    
     if request.method == 'POST':
         if form.validate() is False:
-            return render_template('signin.html', form=form)
+            return render_template('login.html', form=form)
         else:
             g.user = User.query.filter_by(email = form.email.data.lower()).first()
             remember_me = form.remember_me.data
@@ -341,11 +339,11 @@ def signin():
             if g.user.active is False:
                 flash(' Your account has not been activated yet. '
                       'To do this,please click on the activation link on the email we sent to you.')
-                return render_template('signin.html', form=form)
+                return render_template('login.html', form=form)
         return redirect(request.args.get('next') or url_for('.user', nickname = g.user.nickname))
                         
     elif request.method == 'GET':
-        return render_template('signin.html', form=form) 
+        return render_template('login.html', form=form)
 
 
 @main.route('/signout')

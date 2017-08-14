@@ -18,8 +18,11 @@ def create_app():
     app = Flask(__name__)
     app.config.from_object('config')
     db.init_app(app)
+
+    lm.session_protection = 'strong'
+    lm.login_view = 'auth.login'  # need right namespace
     lm.init_app(app)
-    lm.login_view = 'main.signin'  # need right namespace
+
     bootstrap = Bootstrap(app)
     moment = Moment(app)
     admin.init_app(app)
@@ -47,6 +50,10 @@ def create_app():
 
         from .main import main as main_blueprint
         app.register_blueprint(main_blueprint)
+
+        from .auth import auth as auth_blueprint
+        app.register_blueprint(auth_blueprint, url_prefix='/auth')
+
         return app
 
 # from app import views
