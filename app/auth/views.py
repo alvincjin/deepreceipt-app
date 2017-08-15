@@ -12,7 +12,7 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
-        if user is not None and user.verify_password(form.password.data):
+        if user is not None and user.check_password(form.password.data):
             login_user(user, form.remember_me.data)
             return redirect(request.args.get('next') or url_for('main.index'))
         flash('Invalid username or password.')
@@ -36,7 +36,7 @@ def signup():
 
     if request.method == 'POST':
         if form.validate() is False:
-            return render_template('auth/registry.html', form=form)
+            return render_template('auth/register.html', form=form)
         else:
             nickname = form.email.data.split('@')[0]
             nickname = User.make_unique_nickname(nickname)
@@ -58,10 +58,10 @@ def signup():
             msg = '''
             This email serves to confirm that you are the owner of this email address.
             Please click the following activation link to confirm:
-            %suser_activation/%s/
+            %sauth/user_activation/%s/
             Thank you.
             DeepFit Inc.
-            ''' % (request.url_root,user.get_id())
+            ''' % (request.url_root, user.get_id())
 
             send_emails(subject, msg, user.email)
             flash('Registration was successful. '
@@ -72,3 +72,14 @@ def signup():
         return render_template('auth/register.html', form=form)
 
 
+@auth.route('/user_activation/<key>/')
+def activate_user(key):
+    user = User.query.get(key)
+    if user.active is True:
+        flash('The account for this link has already been activated.')
+        return redirect(url_for('.login'))
+    user.active = True
+    db.session.add(user)
+    db.session.commit()
+    flash('Your account has been activated. You may now login.')
+    return redirect(url_for('.login'))

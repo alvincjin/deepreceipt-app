@@ -17,8 +17,15 @@ $ virtualenv venv
 $ source venv/bin/activate
 
 $ pip install -r requirements.txt
+```
 
-$ python db_create.py
+Database Management
+```
+$ ./manage.py db init
+
+$ ./manage.py db migrate
+
+$ ./manage.py db upgrade
 
 $ python run.py
 

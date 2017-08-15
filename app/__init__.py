@@ -59,3 +59,4 @@ def create_app():
 # from app import views
 from app import models
 
+
