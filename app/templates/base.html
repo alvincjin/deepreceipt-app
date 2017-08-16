@@ -34,9 +34,9 @@
                 <li><a href="{{ url_for('main.contact') }}">Contact</a></li>
                 {% if g.user.is_authenticated %}
                 <li><a href="{{ url_for('main.user', nickname = g.user.nickname) }}">MyProfile</a></li>
-                <li><a href="{{ url_for('main.signout') }}">Sign Out</a></li>
+                <li><a href="{{ url_for('auth.logout') }}">Sign Out</a></li>
                 {% else %}
-                <li><a href="{{ url_for('main.signin') }}">Sign In</a></li>
+                <li><a href="{{ url_for('auth.login') }}">Sign In</a></li>
                 {% endif %}
             </ul>
         </div>

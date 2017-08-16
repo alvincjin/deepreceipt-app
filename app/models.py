@@ -2,15 +2,22 @@ from hashlib import md5
 from app import db
 import flask_whooshalchemy as whooshalchemy
 from flask import current_app
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from werkzeug.security import generate_password_hash, check_password_hash
+from . import lm
+
 ROLE_USER = 0
 ROLE_ADMIN = 1
 
 HOUSE = 0
 CONDO = 1
 
+@lm.user_loader
+def load_user(id):
+    return User.query.get(int(id))
 
 class User(db.Model):
+
     id = db.Column(db.Integer, primary_key = True)
     nickname = db.Column(db.String(64), unique = True)
     firstname = db.Column(db.String(100))
@@ -18,6 +25,7 @@ class User(db.Model):
     email = db.Column(db.String(120), index = True, unique = True)
     pwdhash = db.Column(db.String(54))
     phone = db.Column(db.Integer)
+    confirmed = db.Column(db.Boolean, default=False)
    
     role = db.Column(db.SmallInteger, default = ROLE_USER)
     posts = db.relationship('Post', order_by="Post.timestamp", backref = 'author',
@@ -49,15 +57,40 @@ class User(db.Model):
         self.email = email.lower()
         self.set_password(password)
         self.role = role
-     
+
+
     def set_password(self, password):
         self.pwdhash = generate_password_hash(password)
-   
+
+
     def check_password(self, password):
         return check_password_hash(self.pwdhash, password)
    
     def is_authenticated(self):
         return True
+
+    def generate_confirmation_token(self, expiration=3600):
+        s = Serializer(current_app.config['SECRET_KEY'], expiration)
+        return s.dumps({'confirm': self.id})
+
+
+    def confirm(self, token):
+        s = Serializer(current_app.config['SECRET_KEY'])
+        try:
+            data = s.loads(token)
+        except:
+            return False
+        if data.get('confirm') != self.id:
+            return False
+        self.confirmed = True
+        db.confirmed = True
+        db.session.add(self)
+        return True
+
+
+    def generate_reset_token(self, expiration=3600):
+        s = Serializer(current_app.config['SECRET_KEY'], expiration)
+        return s.dumps({'reset': self.id})
 
     def is_active(self):
         if self.active is True:

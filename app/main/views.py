@@ -6,7 +6,7 @@ from . forms import *
 from . import main
 from app.models import User, ROLE_USER, ROLE_ADMIN, Post, Preference, Favourite
 from datetime import datetime
-from app.emails import follower_notification, send_emails
+from app.emails import follower_notification, send_email
 from config import POSTS_PER_PAGE, MAX_SEARCH_RESULTS
 from werkzeug.utils import secure_filename
 from flask_admin.contrib.sqla import ModelView
@@ -30,9 +30,7 @@ path = op.join(os.path.abspath(__file__ + "/../../"), 'static')  # need to get p
 admin.add_view(FileAdmin(path, '/static/', name='Static Files'))
 
 
-@lm.user_loader
-def load_user(id):
-    return User.query.get(int(id))
+
 
 
 @main.before_app_request
@@ -243,7 +241,7 @@ def contact():
             text_body = """
             From: %s < %s >
             %s """ % (form.name.data, form.email.data, form.message.data)
-            send_emails(form.subject.data, text_body, ADMINS[0])
+            send_email(form.subject.data, text_body, ADMINS[0])
             return render_template('contact.html', success=True)
  
     elif request.method == 'GET':
@@ -278,76 +276,6 @@ def user(nickname, page = 1):
     return render_template('user.html', user = user, posts = posts)
 
 
-@main.route('/signup', methods=['GET', 'POST'])
-def signup():
-    form = SignupForm()
-
-    if g.user is not None and g.user.is_authenticated:
-        return redirect(url_for('.user', nickname = g.user.nickname))
-    
-    if request.method == 'POST':
-        if form.validate() is False:
-            return render_template('signup.html', form=form)
-        else:  
-            nickname = form.email.data.split('@')[0]
-            nickname = User.make_unique_nickname(nickname)
-            
-            if form.user_role.data == 'agent':
-               role = 1
-            else:
-               role = 0
-
-            user = User(nickname, form.firstname.data, form.lastname.data,
-                        form.email.data, form.password.data, role)
-            user.role = role
-            
-            db.session.add(user)
-            db.session.commit()
-            #send activation email
-             
-            subject = 'Confirmation of registration to %s' % request.url_root
-            msg = '''
-            This email serves to confirm that you are the owner of this email address.
-            Please click the following activation link to confirm:
-            %suser_activation/%s/
-            Thank you.
-            DeepFit Inc.
-            ''' % (request.url_root,user.get_id())
-
-            send_emails(subject, msg, user.email)
-            flash('Registration was successful. '
-                  'Please click the activation link sent to your email to activate your account.')
-            return redirect(url_for('.signin'))
-
-    elif request.method == 'GET':
-        return render_template('signup.html', form=form)
-
-
-@main.route('/signin', methods=['GET', 'POST'])
-def signin():
-        
-    if g.user is not None and g.user.is_authenticated:
-        return redirect(url_for('.user', nickname = g.user.nickname))
-    form = SigninForm()
-   
-    if request.method == 'POST':
-        if form.validate() is False:
-            return render_template('signin.html', form=form)
-        else:
-            g.user = User.query.filter_by(email = form.email.data.lower()).first()
-            remember_me = form.remember_me.data
-            login_user(g.user, remember = remember_me)
-            
-            if g.user.active is False:
-                flash(' Your account has not been activated yet. '
-                      'To do this,please click on the activation link on the email we sent to you.')
-                return render_template('signin.html', form=form)
-        return redirect(request.args.get('next') or url_for('.user', nickname = g.user.nickname))
-                        
-    elif request.method == 'GET':
-        return render_template('signin.html', form=form) 
-
-
 @main.route('/signout')
 def signout():
     logout_user()
@@ -371,17 +299,7 @@ def delete(id):
     return redirect(url_for('.list_post'))
     
 
-@main.route('/user_activation/<key>/')
-def activate_user(key):
-    user = User.query.get(key)
-    if user.active is True:
-        flash('The account for this link has already been activated.')
-        return redirect(url_for('.signin'))
-    user.active = True
-    db.session.add(user)
-    db.session.commit()
-    flash('Your account has been activated. You may now login.')
-    return redirect(url_for('.signin'))
+
 
 
 class switch(object):

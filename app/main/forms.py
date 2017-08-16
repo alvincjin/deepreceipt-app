@@ -77,7 +77,7 @@ class SignupForm(FlaskForm):
         else:
             return True
 
-
+'''
 class SigninForm(FlaskForm):
     email = StringField("Email", [validators.required("Please enter your email address."),
                                   validators.Email("Please enter your email address.")])
@@ -98,7 +98,7 @@ class SigninForm(FlaskForm):
         else:
             self.email.errors.append("Invalid e-mail or password")
             return False
-
+'''
 
 class PeferForm(FlaskForm):
     style = SelectField('Property Type', choices=[('House', 'House'), ('Town House','Town House'),
