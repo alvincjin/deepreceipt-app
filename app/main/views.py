@@ -6,7 +6,7 @@ from . forms import *
 from . import main
 from app.models import User, ROLE_USER, ROLE_ADMIN, Post, Preference, Favourite
 from datetime import datetime
-from app.emails import follower_notification, send_emails
+from app.emails import follower_notification, send_email
 from config import POSTS_PER_PAGE, MAX_SEARCH_RESULTS
 from werkzeug.utils import secure_filename
 from flask_admin.contrib.sqla import ModelView
@@ -241,7 +241,7 @@ def contact():
             text_body = """
             From: %s < %s >
             %s """ % (form.name.data, form.email.data, form.message.data)
-            send_emails(form.subject.data, text_body, ADMINS[0])
+            send_email(form.subject.data, text_body, ADMINS[0])
             return render_template('contact.html', success=True)
  
     elif request.method == 'GET':

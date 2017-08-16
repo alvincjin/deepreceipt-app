@@ -1,10 +1,25 @@
 from flask import render_template, redirect, request, url_for, flash, g
 from . import auth
-from flask_login import login_user, logout_user, login_required
+from flask_login import login_user, logout_user, login_required, current_user
 from .forms import LoginForm, SignupForm
 from ..models import User
 from app import db
-from app.emails import send_emails
+from app.emails import send_email
+
+@auth.before_app_request
+def before_request():
+    if current_user.is_authenticated \
+            and not current_user.confirmed \
+            and request.endpoint[:5] != 'auth.' \
+            and request.endpoint != 'static':
+        return redirect(url_for('auth.unconfirmed'))
+
+
+@auth.route('/unconfirmed')
+def unconfirmed():
+    if current_user.is_anonymous() or current_user.confirmed:
+        return redirect('main.index')
+    return render_template('auth/unconfirmed.html')
 
 
 @auth.route('/login', methods=['GET', 'POST'])
@@ -53,18 +68,11 @@ def signup():
             db.session.add(user)
             db.session.commit()
             #send activation email
+            token = user.generate_confirmation_token()
 
-            subject = 'Confirmation of registration to %s' % request.url_root
-            msg = '''
-            This email serves to confirm that you are the owner of this email address.
-            Please click the following activation link to confirm:
-            %sauth/user_activation/%s/
-            Thank you.
-            DeepFit Inc.
-            ''' % (request.url_root, user.get_id())
-
-            send_emails(subject, msg, user.email)
-            flash('Registration was successful. '
+            send_email(user.email, 'Confirm Your Account',
+                       'auth/confirm', user=user, token=token)
+            flash('Registration was successful.'
                   'Please click the activation link sent to your email to activate your account.')
             return redirect(url_for('auth.login'))
 
@@ -72,14 +80,25 @@ def signup():
         return render_template('auth/register.html', form=form)
 
 
-@auth.route('/user_activation/<key>/')
-def activate_user(key):
-    user = User.query.get(key)
-    if user.active is True:
-        flash('The account for this link has already been activated.')
-        return redirect(url_for('.login'))
-    user.active = True
-    db.session.add(user)
-    db.session.commit()
-    flash('Your account has been activated. You may now login.')
-    return redirect(url_for('.login'))
+
+
+@auth.route('/confirm/<token>')
+@login_required
+def confirm(token):
+    if current_user.confirmed:
+        return redirect(url_for('main.index'))
+    if current_user.confirm(token):
+        flash('You have confirmed your account. Thanks!')
+    else:
+        flash('The confirmation link is invalid or has expired.')
+    return redirect(url_for('main.index'))
+
+'auth/confirm',
+@auth.route('/confirm')
+@login_required
+def resend_confirmation():
+    token = current_user.generate_confirmation_token()
+    send_email(current_user.email, 'Confirm Your Account',
+               'auth/confirm', user=current_user, token=token)
+    flash('A new confirmation email has been sent to you by email.')
+    return redirect(url_for('main.index'))
