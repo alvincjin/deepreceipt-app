@@ -21,10 +21,13 @@ $ pip install -r requirements.txt
 
 Database Management
 ```
+# Initialize migration package
 $ ./manage.py db init
 
+# Update the scripts
 $ ./manage.py db migrate
 
+# Execute above scripts
 $ ./manage.py db upgrade
 
 $ python run.py
