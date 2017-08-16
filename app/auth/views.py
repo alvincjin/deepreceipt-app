@@ -56,10 +56,10 @@ def signup():
             nickname = form.email.data.split('@')[0]
             nickname = User.make_unique_nickname(nickname)
 
-            if form.user_role.data == 'agent':
-                role = 1
-            else:
-                role = 0
+            if form.user_role.data == 'applicant':
+                role = 'Applicant'
+            elif form.user_role.data == 'adviser':
+                role = 'Adviser'
 
             user = User(nickname, form.firstname.data, form.lastname.data,
                         form.email.data, form.password.data, role)

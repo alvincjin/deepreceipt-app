@@ -2,6 +2,7 @@ from hashlib import md5
 from app import db
 import flask_whooshalchemy as whooshalchemy
 from flask import current_app
+from flask_login import UserMixin
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import lm
@@ -12,12 +13,20 @@ ROLE_ADMIN = 1
 HOUSE = 0
 CONDO = 1
 
+
+class Permission:
+    WRITE_RESUME = 0x01
+    REVIEW_RESUME = 0x02
+    ADMINISTER = 0x80
+
 @lm.user_loader
 def load_user(id):
     return User.query.get(int(id))
 
-class User(db.Model):
 
+class User(UserMixin, db.Model):
+
+    __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key = True)
     nickname = db.Column(db.String(64), unique = True)
     firstname = db.Column(db.String(100))
@@ -26,8 +35,8 @@ class User(db.Model):
     pwdhash = db.Column(db.String(54))
     phone = db.Column(db.Integer)
     confirmed = db.Column(db.Boolean, default=False)
-   
-    role = db.Column(db.SmallInteger, default = ROLE_USER)
+
+    role = db.Column(db.String(20), default = 'Applicant')
     posts = db.relationship('Post', order_by="Post.timestamp", backref = 'author',
                             lazy = 'dynamic',cascade="all, delete, delete-orphan")
     about_me = db.Column(db.String(140))
@@ -73,7 +82,6 @@ class User(db.Model):
         s = Serializer(current_app.config['SECRET_KEY'], expiration)
         return s.dumps({'confirm': self.id})
 
-
     def confirm(self, token):
         s = Serializer(current_app.config['SECRET_KEY'])
         try:
@@ -86,7 +94,6 @@ class User(db.Model):
         db.confirmed = True
         db.session.add(self)
         return True
-
 
     def generate_reset_token(self, expiration=3600):
         s = Serializer(current_app.config['SECRET_KEY'], expiration)
@@ -112,6 +119,7 @@ class User(db.Model):
 
 
 class Post(db.Model):
+    __tablename__ = 'posts'
     __searchable__ = ['body']
     
     id = db.Column(db.Integer, primary_key = True)
@@ -119,7 +127,7 @@ class Post(db.Model):
     body = db.Column(db.String(1400))
     img = db.Column(db.String(140))
     timestamp = db.Column(db.DateTime)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     location = db.Column(db.String(140))
     price = db.Column(db.Integer)
     interested_user = db.relationship('Favourite', backref = 'author', lazy = 'dynamic',
@@ -134,21 +142,13 @@ class Post(db.Model):
 
     def __repr__(self):
         return '<Post %r>' % (self.body)
-'''
-#Create M2M table
-user_favourite_table = db.Table('Favourite', db.Model.metadata,
-                                db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
-                                db.Column('post_id', db.Integer, db.ForeignKey('post.id')) 
-                                )
-
-'''
 
 
 class Favourite(db.Model):
    
     id = db.Column(db.String(10), primary_key = True, unique = True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    post_id = db.Column(db.Integer, db.ForeignKey('post.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    post_id = db.Column(db.Integer, db.ForeignKey('posts.id'))
 
     def __init__(self, user_id, post_id):
         self.id = str(user_id)+':'+str(post_id)
@@ -165,5 +165,5 @@ class Preference(db.Model):
     garage_no = db.Column(db.Integer)
     location = db.Column(db.String(140))
     price = db.Column(db.Integer)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     notify = db.Column(db.SmallInteger, default = 1)

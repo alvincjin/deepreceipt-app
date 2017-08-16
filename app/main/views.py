@@ -14,7 +14,7 @@ from flask_admin.contrib.fileadmin import FileAdmin
 from pygeocoder import Geocoder
 import os.path as op
 from config import ADMINS
-
+from ..decorators import admin_required, permission_required
 
 # file upload setting
 UPLOAD_AGENT_FOLDER = 'app/static/agent_photo'
@@ -28,9 +28,6 @@ admin.add_view(ModelView(User, db.session))
 admin.add_view(ModelView(Post, db.session))
 path = op.join(os.path.abspath(__file__ + "/../../"), 'static')  # need to get parent path of this code
 admin.add_view(FileAdmin(path, '/static/', name='Static Files'))
-
-
-
 
 
 @main.before_app_request
@@ -52,7 +49,7 @@ def list_post(page = 1):
         
     posts = Post.query.filter( Post.id == Post.id).order_by(Post.timestamp.desc()).paginate(page, POSTS_PER_PAGE, False)
 
-    if form.validate_on_submit() and user.role==0:
+    if form.validate_on_submit() and user.role=='Applicant':
         
         pref = Preference(style = form.style.data, bedroom_no = form.bedroom_no.data,
                           bathroom_no = form.bathroom_no.data, garage_no = form.garage_no.data,
@@ -75,7 +72,7 @@ def list_post(page = 1):
 @main.route('/list_agent/<int:page>', methods=['GET', 'POST'])
 @login_required
 def list_agent(page = 1):
-    users = User.query.filter(User.role == 1).paginate(page, POSTS_PER_PAGE, False)
+    users = User.query.filter(User.role == 'Applicant').paginate(page, POSTS_PER_PAGE, False)
     
     return render_template('list_agent.html',
         title='All the Agents',
@@ -131,7 +128,7 @@ def preference():
 
     form = PeferForm()
     user = g.user
-    if form.validate_on_submit() and user.role==0:
+    if form.validate_on_submit() and user.role=='Applicant':
         
         pref = Preference.query.filter_by(user_id=user.id).first()
         if pref is None:
@@ -172,7 +169,7 @@ def edit_post(pid=0):
     user = g.user      
     post = Post.query.filter_by(id = pid).first()
 
-    if form.validate_on_submit() and user.role:
+    if form.validate_on_submit() and user.role == 'Adviser':
         
         if post is None:
             post = Post(title = form.title.data, body = form.body.data,
@@ -264,7 +261,7 @@ def user(nickname, page = 1):
     if user is None:
         flash('User ' + nickname + ' not found.')
         return redirect(url_for('.signin'))
-    if user.role == 1:
+    if user.role == 'Applicant':
         posts = user.posts.paginate(page, POSTS_PER_PAGE, False)
     else:
         favs = user.fav.all()
