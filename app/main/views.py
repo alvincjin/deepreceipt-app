@@ -4,7 +4,7 @@ from flask_login import login_user, logout_user, current_user, login_required
 from app import db, lm, admin
 from . forms import *
 from . import main
-from app.models import User, ROLE_USER, ROLE_ADMIN, Post, Preference, Favourite
+from app.models import User, ROLE_APPLICANT, ROLE_ADVISER, ROLE_ADMIN, Post, Preference, Favourite
 from datetime import datetime
 from app.emails import follower_notification, send_email
 from config import POSTS_PER_PAGE, MAX_SEARCH_RESULTS
@@ -52,7 +52,7 @@ def list_post(page = 1):
         
     posts = Post.query.filter( Post.id == Post.id).order_by(Post.timestamp.desc()).paginate(page, POSTS_PER_PAGE, False)
 
-    if form.validate_on_submit() and user.role==0:
+    if form.validate_on_submit() and user.role == ROLE_APPLICANT:
         
         pref = Preference(style = form.style.data, bedroom_no = form.bedroom_no.data,
                           bathroom_no = form.bathroom_no.data, garage_no = form.garage_no.data,
@@ -75,7 +75,7 @@ def list_post(page = 1):
 @main.route('/list_agent/<int:page>', methods=['GET', 'POST'])
 @login_required
 def list_agent(page = 1):
-    users = User.query.filter(User.role == 1).paginate(page, POSTS_PER_PAGE, False)
+    users = User.query.filter(User.role == ROLE_ADVISER).paginate(page, POSTS_PER_PAGE, False)
     
     return render_template('list_agent.html',
         title='All the Agents',
@@ -131,7 +131,7 @@ def preference():
 
     form = PeferForm()
     user = g.user
-    if form.validate_on_submit() and user.role==0:
+    if form.validate_on_submit() and user.role == ROLE_APPLICANT:
         
         pref = Preference.query.filter_by(user_id=user.id).first()
         if pref is None:
@@ -172,7 +172,7 @@ def edit_post(pid=0):
     user = g.user      
     post = Post.query.filter_by(id = pid).first()
 
-    if form.validate_on_submit() and user.role:
+    if form.validate_on_submit() and user.role == ROLE_ADVISER:
         
         if post is None:
             post = Post(title = form.title.data, body = form.body.data,
@@ -264,9 +264,9 @@ def user(nickname, page = 1):
     if user is None:
         flash('User ' + nickname + ' not found.')
         return redirect(url_for('.signin'))
-    if user.role == 1:
+    if user.role == ROLE_ADVISER:
         posts = user.posts.paginate(page, POSTS_PER_PAGE, False)
-    else:
+    elif user.role == ROLE_APPLICANT:
         favs = user.fav.all()
         idlist = []
         for fav in favs:

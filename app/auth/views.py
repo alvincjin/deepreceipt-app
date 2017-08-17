@@ -2,9 +2,10 @@ from flask import render_template, redirect, request, url_for, flash, g
 from . import auth
 from flask_login import login_user, logout_user, login_required, current_user
 from .forms import LoginForm, SignupForm
-from ..models import User
+from ..models import User, ROLE_APPLICANT, ROLE_ADVISER, ROLE_ADMIN
 from app import db
 from app.emails import send_email
+
 
 @auth.before_app_request
 def before_request():
@@ -56,10 +57,10 @@ def signup():
             nickname = form.email.data.split('@')[0]
             nickname = User.make_unique_nickname(nickname)
 
-            if form.user_role.data == 'agent':
-                role = 1
-            else:
-                role = 0
+            if form.user_role.data == 'adviser':
+                role = ROLE_ADVISER
+            elif form.user_role.data == 'applicant':
+                role = ROLE_APPLICANT
 
             user = User(nickname, form.firstname.data, form.lastname.data,
                         form.email.data, form.password.data, role)

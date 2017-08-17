@@ -52,7 +52,7 @@ class ContactForm(FlaskForm):
     message = TextAreaField("Message",  [validators.required("Please enter a message.")])
     submit = SubmitField("Send")
 
-
+'''
 class SignupForm(FlaskForm):
     firstname = StringField("First name",  [validators.required("Please enter your first name.")])
     lastname = StringField("Last name",  [validators.required("Please enter your last name.")])
@@ -76,7 +76,7 @@ class SignupForm(FlaskForm):
             return False
         else:
             return True
-
+'''
 '''
 class SigninForm(FlaskForm):
     email = StringField("Email", [validators.required("Please enter your email address."),
