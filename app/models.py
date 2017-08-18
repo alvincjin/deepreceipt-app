@@ -1,4 +1,5 @@
 from hashlib import md5
+from datetime import datetime
 from app import db
 import flask_whooshalchemy as whooshalchemy
 from flask import current_app
@@ -6,8 +7,9 @@ from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import lm
 
-ROLE_USER = 0
-ROLE_ADMIN = 1
+ROLE_APPLICANT = 0
+ROLE_ADVISER = 1
+ROLE_ADMIN = 2
 
 HOUSE = 0
 CONDO = 1
@@ -25,13 +27,15 @@ class User(db.Model):
     email = db.Column(db.String(120), index = True, unique = True)
     pwdhash = db.Column(db.String(54))
     phone = db.Column(db.Integer)
+    address = db.Column(db.String(64))
     confirmed = db.Column(db.Boolean, default=False)
    
-    role = db.Column(db.SmallInteger, default = ROLE_USER)
+    role = db.Column(db.SmallInteger, default = ROLE_APPLICANT)
     posts = db.relationship('Post', order_by="Post.timestamp", backref = 'author',
                             lazy = 'dynamic',cascade="all, delete, delete-orphan")
-    about_me = db.Column(db.String(140))
-    last_seen = db.Column(db.DateTime)
+    about_me = db.Column(db.Text())
+    last_seen = db.Column(db.DateTime, default=datetime.utcnow)
+    member_since = db.Column(db.DateTime(), default=datetime.utcnow)
     portrait = db.Column(db.String(140))
     pref = db.relationship('Preference', uselist=False, backref = 'author')
     fav = db.relationship('Favourite', backref = 'user', lazy = 'dynamic')
@@ -58,10 +62,12 @@ class User(db.Model):
         self.set_password(password)
         self.role = role
 
+    def ping(self):
+        self.last_seen = datetime.utcnow()
+        db.session.add(self)
 
     def set_password(self, password):
         self.pwdhash = generate_password_hash(password)
-
 
     def check_password(self, password):
         return check_password_hash(self.pwdhash, password)
@@ -72,7 +78,6 @@ class User(db.Model):
     def generate_confirmation_token(self, expiration=3600):
         s = Serializer(current_app.config['SECRET_KEY'], expiration)
         return s.dumps({'confirm': self.id})
-
 
     def confirm(self, token):
         s = Serializer(current_app.config['SECRET_KEY'])

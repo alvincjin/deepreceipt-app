@@ -42,7 +42,7 @@ class SignupForm(FlaskForm):
         DataRequired(), EqualTo('password2', message='Passwords must match.')])
     password2 = PasswordField('Confirm password', validators=[DataRequired()])
     # Select fields keep a choices property which is a sequence of (value, label) pairs.
-    user_role = SelectField('Role', choices=[('user', 'User'), ('agent', 'Agent')])
+    user_role = SelectField('Role', choices=[('applicant', 'Applicant'), ('adviser', 'Adviser')])
     recaptcha = RecaptchaField()
     submit = SubmitField("Create account")
 

@@ -6,10 +6,12 @@ from .. models import User
 
 
 class EditForm(FlaskForm):
-    nickname = StringField('nickname', validators = [DataRequired()])
-    about_me = TextAreaField('about_me', validators = [Length(min = 0, max = 140)])
-    phone = IntegerField('phone')
+    nickname = StringField('Nickname', validators = [DataRequired()])
+    about_me = TextAreaField('About Me', validators = [Length(min = 0, max = 140)])
+    phone = IntegerField('Cell Phone')
+    address = StringField('Address')
     fileName = FileField()
+    submit = SubmitField("Update Profile")
 
     def __init__(self, original_nickname, *args, **kwargs):
         FlaskForm.__init__(self, *args, **kwargs)
@@ -52,7 +54,7 @@ class ContactForm(FlaskForm):
     message = TextAreaField("Message",  [validators.required("Please enter a message.")])
     submit = SubmitField("Send")
 
-
+'''
 class SignupForm(FlaskForm):
     firstname = StringField("First name",  [validators.required("Please enter your first name.")])
     lastname = StringField("Last name",  [validators.required("Please enter your last name.")])
@@ -76,7 +78,7 @@ class SignupForm(FlaskForm):
             return False
         else:
             return True
-
+'''
 '''
 class SigninForm(FlaskForm):
     email = StringField("Email", [validators.required("Please enter your email address."),
