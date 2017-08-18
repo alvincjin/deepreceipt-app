@@ -23,19 +23,18 @@
                     {% endif %}
                 </p>
 
-
                 {% if user.about_me %}
-                <p>{{user.about_me}}</p>
+                <p>About Me: {{user.about_me}}</p>
                 {% endif %}
 
                 <p>Member since {{ moment(user.member_since).format('L') }}. Last seen {{ moment(user.last_seen).fromNow() }}.</p>
 
 
-                {% if g.user.nickname == user.nickname %}
+                {% if user == current_user %}
                 <a href="{{url_for('main.edit_profile')}}">
-                    <i class="icon-user"></i>Profile
+                    <i class="icon-user"></i>Edit Profile
                 </a>
-                {% if g.user.role==0 %}
+                {% if user.role== ROLE_APPLICANT %}
                 &nbsp;&nbsp;&nbsp;
                 <a href="{{url_for('main.preference')}}">
                     <i class="icon-check"></i>Preference
@@ -49,7 +48,7 @@
 
                 &nbsp;&nbsp;&nbsp;
                 <a href="#myModal" class="text" data-toggle="modal">
-                    <i class="icon-calendar"></i>Calendar
+                    <i class="icon-calendar"></i>Calendar<br>
                 </a>
 
                 <div id="myModal" class="modal hide fade" tabindex="-1" role="dialog"
