@@ -1,6 +1,8 @@
 <!-- extend base layout -->
 {% extends "base.html" %}
 
+{% block title %}DeepFit - {{ user.nickname }}{% endblock %}
+
 {% block page_content %}
 
 <table class="table table-hover">
@@ -13,15 +15,21 @@
                         <h1>{{user.firstname}}&nbsp;{{user.lastname}}&nbsp;({{user.nickname}})</h1>
                     </h4>
                 </div>
-                <p>Email: <a href="mailto:#">{{user.email}}</a>&nbsp;&nbsp;Phone: {{user.phone}} </p>
+                <p>
+                    Email: <a href="mailto:#">{{user.email}}</a><br>
+                    Phone: {{user.phone}}<br>
+                    {% if user.address %}
+                    Address: <a href="http://maps.google.com/?q={{ user.address }}">{{ user.address }}</a><br>
+                    {% endif %}
+                </p>
+
 
                 {% if user.about_me %}
                 <p>{{user.about_me}}</p>
                 {% endif %}
 
-                {% if user.last_seen %}
-                <p>Last seen: {{moment(user.last_seen).calendar()}}</p>
-                {% endif %}
+                <p>Member since {{ moment(user.member_since).format('L') }}. Last seen {{ moment(user.last_seen).fromNow() }}.</p>
+
 
                 {% if g.user.nickname == user.nickname %}
                 <a href="{{url_for('main.edit_profile')}}">

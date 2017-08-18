@@ -6,10 +6,12 @@ from .. models import User
 
 
 class EditForm(FlaskForm):
-    nickname = StringField('nickname', validators = [DataRequired()])
-    about_me = TextAreaField('about_me', validators = [Length(min = 0, max = 140)])
-    phone = IntegerField('phone')
+    nickname = StringField('Nickname', validators = [DataRequired()])
+    about_me = TextAreaField('About Me', validators = [Length(min = 0, max = 140)])
+    phone = IntegerField('Cell Phone')
+    address = StringField('Address')
     fileName = FileField()
+    submit = SubmitField("Update Profile")
 
     def __init__(self, original_nickname, *args, **kwargs):
         FlaskForm.__init__(self, *args, **kwargs)
