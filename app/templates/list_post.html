@@ -1,6 +1,8 @@
 <!-- extend base layout -->
 {% extends "base.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
+{% import "_macros.html" as macros %}
+
 {% block page_content %}
 
 {% if g.user.is_authenticated %}
@@ -24,10 +26,11 @@
 </div>
 {% endif %}
 
-
+<div>
 {% for post in posts.items %}
 {% include 'post.html' %}
 {% endfor %}
+</div>
 
 <ul class="pager">
     {% if posts.has_prev %}
@@ -51,29 +54,4 @@
     {% endif %}
 </ul>
 
-<link href="/static/css/slider.css" rel="stylesheet">
-<script src="/static/js/bootstrap-slider.js"></script>
-
-<script>
-		$(function(){
-			window.prettyPrint && prettyPrint();
-
-        $('#sl1').slider({
-          formater: function(value) {
-            return 'Current value: '+value;
-          }
-        });
-         $('#sl2').slider({
-          formater: function(value) {
-            return 'Current value: '+value;
-          }
-        });
-         $('#sl3').slider({
-          formater: function(value) {
-            return 'Current value: '+value;
-          }
-        });
-    });
-
-</script>
 {% endblock %}

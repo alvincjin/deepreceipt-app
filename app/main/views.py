@@ -172,10 +172,10 @@ def map_address(address):
 def edit_post(pid=0):
 
     form = PostForm()
-    user = g.user      
+    #user = g.user
     post = Post.query.filter_by(id = pid).first()
 
-    if form.validate_on_submit() and user.role == ROLE_ADVISER:
+    if form.validate_on_submit() and current_user.role == ROLE_ADVISER:
         
         if post is None:
             post = Post(title = form.title.data, body = form.body.data,
@@ -208,7 +208,7 @@ def edit_post(pid=0):
         db.session.add(post)
         db.session.commit()
         flash("Your post is alive now. ")
-        return redirect(url_for('.user', nickname = g.user.nickname))
+        return redirect(url_for('.user', nickname = current_user.nickname))
 
     elif request.method != "POST":
         form = PostForm(obj=post)
