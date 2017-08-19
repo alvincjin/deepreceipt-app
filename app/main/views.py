@@ -48,9 +48,12 @@ def before_request():
 def list_post(page = 1):
     
     form = PeferForm()
-    # user = g.user
-        
-    posts = Post.query.filter( Post.id == Post.id).order_by(Post.timestamp.desc()).paginate(page, POSTS_PER_PAGE, False)
+
+    page = request.args.get('page', 1, type=int)
+    pagination = Post.query.filter( Post.id == Post.id).order_by(Post.timestamp.desc()) \
+        .paginate(page, per_page=current_app.config['FLASKY_POSTS_PER_PAGE'], error_out=False)
+
+    posts = pagination.items
 
     if form.validate_on_submit() and current_user.role == ROLE_APPLICANT:
         
@@ -63,12 +66,13 @@ def list_post(page = 1):
             .filter(Post.bedroom_no >= pref.bedroom_no-1).filter(Post.bedroom_no <= pref.bedroom_no+1)\
             .order_by(Post.timestamp.desc())
         
-        posts = results.paginate(page, POSTS_PER_PAGE, False)
+        posts = results.paginate(page, POSTS_PER_PAGE, False).items
         flash('Find '+str(results.count())+' matching results')
- 
+
     return render_template('list_post.html',
-        title = 'All the Houses',
-        posts = posts, form = form)
+        title='All the Houses',
+        posts=posts, form=form,
+        pagination=pagination)
 
 
 @main.route('/list_agent', methods=['GET', 'POST'])
@@ -179,7 +183,7 @@ def edit_post(pid=0):
         
         if post is None:
             post = Post(title = form.title.data, body = form.body.data,
-                        timestamp = datetime.utcnow(), user_id = user.id)
+                        timestamp = datetime.utcnow(), user_id = current_user.id)
         else:
             post.title = form.title.data
             post.body = form.body.data
@@ -267,16 +271,18 @@ def user(nickname, page = 1):
     if user is None:
         flash('User ' + nickname + ' not found.')
         return redirect(url_for('.index'))
+
     if user.role == ROLE_ADVISER:
-        posts = user.posts.paginate(page, POSTS_PER_PAGE, False)
+        pagination = user.posts.paginate(page, POSTS_PER_PAGE, False)
     elif user.role == ROLE_APPLICANT:
         favs = user.fav.all()
         idlist = []
         for fav in favs:
             idlist.append(fav.post_id)
-        posts = Post.query.filter(Post.id.in_(idlist)).paginate(page, POSTS_PER_PAGE, False)
-        
-    return render_template('user.html', user = user, posts = posts)
+        pagination = Post.query.filter(Post.id.in_(idlist)).paginate(page, POSTS_PER_PAGE, False)
+
+    posts = pagination.items
+    return render_template('user.html', user = user, posts = posts, pagination = pagination)
 
 
 @main.route('/signout')
