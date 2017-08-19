@@ -37,13 +37,15 @@ class PostForm(FlaskForm):
     bedroom_no = IntegerField('Bedroom', validators = [NumberRange(min=1, max= 5)])
     bathroom_no = IntegerField('Bathroom', validators = [NumberRange(min=1, max= 5)])
     garage_no = IntegerField('Garage', validators = [NumberRange(min=0, max= 4)])
-    body = TextAreaField('Body')
+    body = TextAreaField('Feature Descriptions:', validators=[DataRequired()])
     fileName = FileField()
     location = location = SelectField('City', choices=[('Toronto', 'Toronto'), ('Mississauga', 'Mississauga'),
                                                        ('Markham','Markham'),('Richmond Hill','Richmond Hill'),
                                                        ('Vaughan','Vaughan'),('Milton','Milton')])
     price = IntegerField('Price', validators = [NumberRange(min=100000, max= 10000000)])
     address = StringField('Address')
+
+    submit = SubmitField('Submit')
     
 
 class ContactForm(FlaskForm):

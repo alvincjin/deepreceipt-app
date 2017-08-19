@@ -48,11 +48,11 @@ def before_request():
 def list_post(page = 1):
     
     form = PeferForm()
-    user = g.user
+    # user = g.user
         
     posts = Post.query.filter( Post.id == Post.id).order_by(Post.timestamp.desc()).paginate(page, POSTS_PER_PAGE, False)
 
-    if form.validate_on_submit() and user.role == ROLE_APPLICANT:
+    if form.validate_on_submit() and current_user.role == ROLE_APPLICANT:
         
         pref = Preference(style = form.style.data, bedroom_no = form.bedroom_no.data,
                           bathroom_no = form.bathroom_no.data, garage_no = form.garage_no.data,
@@ -300,9 +300,6 @@ def delete(id):
     db.session.commit()
     flash('Your post has been deleted.')
     return redirect(url_for('.list_post'))
-    
-
-
 
 
 class switch(object):
