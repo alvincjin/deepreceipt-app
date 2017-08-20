@@ -22,6 +22,8 @@ WHOOSH_BASE = os.path.join(basedir, 'search.db')
 SQLALCHEMY_COMMIT_ON_TEARDOWN = True
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 
+FLASKY_POSTS_PER_PAGE = 10
+
 FLASKY_MAIL_SUBJECT_PREFIX = '[DeepFit]'
 FLASKY_MAIL_SENDER = 'DeepFit Admin <admin@deepfit.io>'
 # email server

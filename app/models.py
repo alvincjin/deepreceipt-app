@@ -35,7 +35,7 @@ class User(UserMixin, db.Model):
    
     role = db.Column(db.SmallInteger, default = ROLE_APPLICANT)
     posts = db.relationship('Post', order_by="Post.timestamp", backref = 'author',
-                            lazy = 'dynamic',cascade="all, delete, delete-orphan")
+                            lazy = 'dynamic', cascade="all, delete, delete-orphan")
     about_me = db.Column(db.Text())
     last_seen = db.Column(db.DateTime, default=datetime.utcnow)
     member_since = db.Column(db.DateTime(), default=datetime.utcnow)
