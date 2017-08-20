@@ -4,7 +4,7 @@ from flask_login import login_user, logout_user, current_user, login_required
 from app import db, lm, admin
 from .forms import *
 from . import main
-from app.models import User, ROLE_APPLICANT, ROLE_ADVISER, ROLE_ADMIN, Post, Preference, Favourite
+from app.models import User, ROLE_APPLICANT, ROLE_ADVISER, ROLE_ADMIN, Post, Comment, Preference, Favourite
 from datetime import datetime
 from app.emails import send_email
 from config import POSTS_PER_PAGE, MAX_SEARCH_RESULTS
@@ -166,8 +166,8 @@ def map_address(address):
 @main.route('/edit_post/<int:pid>', methods=['GET', 'POST'])
 @login_required
 def edit_post(pid=0):
+
     form = PostForm()
-    # user = g.user
     post = Post.query.filter_by(id=pid).first()
 
     if form.validate_on_submit() and current_user.role == ROLE_ADVISER:
@@ -245,11 +245,28 @@ def contact():
         return render_template('contact.html', form=form)
 
 
-@main.route('/home/<int:pid>')
+@main.route('/home/<int:pid>', methods=['GET', 'POST'])
 @login_required
 def home(pid):
-    post = Post.query.get(pid)
-    return render_template("home.html", post=post)
+    post = Post.query.get_or_404(pid)
+    form = CommentForm()
+    if form.validate_on_submit():
+        comment = Comment(body=form.body.data,
+                          post=post,
+                          author=current_user._get_current_object()
+                          )
+        db.session.add(comment)
+        flash('Your comment has been published.')
+        return redirect(url_for('.home', pid=post.id))
+    page = request.args.get('page', 1, type=int)
+    if page == -1:
+        page = (post.comments.count() - 1) // \
+               current_app.config['FLASKY_COMMENTS_PER_PAGE'] + 1
+    pagination = post.comments.order_by(Comment.timestamp.asc())\
+        .paginate(page, per_page=current_app.config['FLASKY_COMMENTS_PER_PAGE'], error_out=False)
+    comments = pagination.items
+    return render_template("home.html", post=post, form=form,
+                           comments=comments, pagination=pagination)
 
 
 @main.route('/user/<nickname>')

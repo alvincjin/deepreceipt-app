@@ -35,6 +35,13 @@
                         &nbsp;post {{moment(post.timestamp).fromNow()}}
                     </td>
                     <td>{{post.interested_user.count()}} people like it.</td>
+                    <td>
+                        <a href="{{ url_for('main.home', pid=post.id) }}#comments">
+                            <span class="label label-primary">
+                                {{ post.comments.count() }} Comments
+                            </span>
+                        </a>
+                    </td>
 
                     <td>{% if g.user.role %}
                         {% if g.user.nickname == post.author.nickname %}

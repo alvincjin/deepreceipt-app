@@ -34,6 +34,7 @@ class User(UserMixin, db.Model):
     confirmed = db.Column(db.Boolean, default=False)
    
     role = db.Column(db.SmallInteger, default = ROLE_APPLICANT)
+    comments = db.relationship('Comment', backref='author', lazy='dynamic')
     posts = db.relationship('Post', order_by="Post.timestamp", backref = 'author',
                             lazy = 'dynamic', cascade="all, delete, delete-orphan")
     about_me = db.Column(db.Text())
@@ -95,7 +96,6 @@ class User(UserMixin, db.Model):
         db.session.add(self)
         return True
 
-
     def generate_reset_token(self, expiration=3600):
         s = Serializer(current_app.config['SECRET_KEY'], expiration)
         return s.dumps({'reset': self.id})
@@ -132,7 +132,7 @@ class Post(db.Model):
     price = db.Column(db.Integer)
     interested_user = db.relationship('Favourite', backref = 'author', lazy = 'dynamic',
                                       cascade="all, delete, delete-orphan")
-
+    comments = db.relationship('Comment', backref='post', lazy='dynamic')
     style = db.Column(db.String(10), default = "house")
     bedroom_no = db.Column(db.Integer, default = 1)
     bathroom_no = db.Column(db.Integer, default = 1)
@@ -167,3 +167,14 @@ class Preference(db.Model):
     price = db.Column(db.Integer)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     notify = db.Column(db.SmallInteger, default = 1)
+
+
+class Comment(db.Model):
+
+    id = db.Column(db.Integer, primary_key=True)
+    body = db.Column(db.Text)
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    # disabled = db.Column(db.Boolean)
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    post_id = db.Column(db.Integer, db.ForeignKey('post.id'))
+
