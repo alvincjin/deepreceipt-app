@@ -3,6 +3,7 @@ from datetime import datetime
 from app import db
 import flask_whooshalchemy as whooshalchemy
 from flask import current_app
+from flask_login import UserMixin
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import lm
@@ -14,11 +15,13 @@ ROLE_ADMIN = 2
 HOUSE = 0
 CONDO = 1
 
+
 @lm.user_loader
 def load_user(id):
     return User.query.get(int(id))
 
-class User(db.Model):
+
+class User(UserMixin, db.Model):
 
     id = db.Column(db.Integer, primary_key = True)
     nickname = db.Column(db.String(64), unique = True)
@@ -32,7 +35,7 @@ class User(db.Model):
    
     role = db.Column(db.SmallInteger, default = ROLE_APPLICANT)
     posts = db.relationship('Post', order_by="Post.timestamp", backref = 'author',
-                            lazy = 'dynamic',cascade="all, delete, delete-orphan")
+                            lazy = 'dynamic', cascade="all, delete, delete-orphan")
     about_me = db.Column(db.Text())
     last_seen = db.Column(db.DateTime, default=datetime.utcnow)
     member_since = db.Column(db.DateTime(), default=datetime.utcnow)
@@ -139,14 +142,6 @@ class Post(db.Model):
 
     def __repr__(self):
         return '<Post %r>' % (self.body)
-'''
-#Create M2M table
-user_favourite_table = db.Table('Favourite', db.Model.metadata,
-                                db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
-                                db.Column('post_id', db.Integer, db.ForeignKey('post.id')) 
-                                )
-
-'''
 
 
 class Favourite(db.Model):
