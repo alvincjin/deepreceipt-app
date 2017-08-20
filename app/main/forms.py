@@ -46,7 +46,12 @@ class PostForm(FlaskForm):
     address = StringField('Address')
 
     submit = SubmitField('Submit')
-    
+
+
+class CommentForm(FlaskForm):
+    body = StringField('Enter your comment', validators=[DataRequired()])
+    submit = SubmitField('Submit')
+
 
 class ContactForm(FlaskForm):
     name = StringField("Name",  [validators.required("Please enter your name.")])
@@ -56,53 +61,6 @@ class ContactForm(FlaskForm):
     message = TextAreaField("Message",  [validators.required("Please enter a message.")])
     submit = SubmitField("Send")
 
-'''
-class SignupForm(FlaskForm):
-    firstname = StringField("First name",  [validators.required("Please enter your first name.")])
-    lastname = StringField("Last name",  [validators.required("Please enter your last name.")])
-    email = StringField("Email",  [validators.required("Please enter your email address."),
-                                   validators.Email("Please enter your email address.")])
-    password = PasswordField('Password', [validators.required("Please enter a password.")])
-    # Select fields keep a choices property which is a sequence of (value, label) pairs.
-    user_role = SelectField('Role', choices=[('user', 'User'), ('agent', 'Agent')])
-    recaptcha = RecaptchaField()
-    submit = SubmitField("Create account")
- 
-    def __init__(self, *args, **kwargs):
-        FlaskForm.__init__(self, *args, **kwargs)
- 
-    def validate(self):
-        if not FlaskForm.validate(self):
-            return False
-        user = User.query.filter_by(email = self.email.data.lower()).first()
-        if user:
-            self.email.errors.append("That email is already taken")
-            return False
-        else:
-            return True
-'''
-'''
-class SigninForm(FlaskForm):
-    email = StringField("Email", [validators.required("Please enter your email address."),
-                                  validators.Email("Please enter your email address.")])
-    password = PasswordField('Password', [validators.required("Please enter a password.")])
-    remember_me = BooleanField('Remember me', default = False)
-    submit = SubmitField("Sign In")
-    
-    def __init__(self, *args, **kwargs):
-        FlaskForm.__init__(self, *args, **kwargs)
- 
-    def validate(self):
-        if not FlaskForm.validate(self):
-            return False
-     
-        user = User.query.filter_by(email = self.email.data.lower()).first()
-        if user and user.check_password(self.password.data):
-            return True
-        else:
-            self.email.errors.append("Invalid e-mail or password")
-            return False
-'''
 
 class PeferForm(FlaskForm):
     style = SelectField('Property Type', choices=[('House', 'House'), ('Town House','Town House'),
