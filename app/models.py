@@ -1,8 +1,9 @@
 from hashlib import md5
 from datetime import datetime
 from app import db
+from app.exceptions import ValidationError
 import flask_whooshalchemy as whooshalchemy
-from flask import current_app
+from flask import current_app, url_for
 from flask_login import UserMixin
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -96,9 +97,32 @@ class User(UserMixin, db.Model):
         db.session.add(self)
         return True
 
+    def to_json(self):
+        json_user = {
+            'url': url_for('api.get_post', id=self.id, _external=True),
+            'nickname': self.nickname,
+            'member_since': self.member_since,
+            'last_seen': self.last_seen,
+            'posts': url_for('api.get_user_posts', id=self.id, _external=True),
+            'post_count': self.posts.count(),
+        }
+        return json_user
     def generate_reset_token(self, expiration=3600):
         s = Serializer(current_app.config['SECRET_KEY'], expiration)
         return s.dumps({'reset': self.id})
+
+    def generate_auth_token(self, expiration):
+        s = Serializer(current_app.config['SECRET_KEY'], expiration)
+        return s.dumps({'id': self.id})
+
+    @staticmethod
+    def verify_auth_token(token):
+        s = Serializer(current_app.config['SECRET_KEY'])
+        try:
+            data = s.loads(token)
+        except:
+            return None
+        return User.query.get(data['id'])
 
     def is_active(self):
         if self.active is True:
@@ -142,6 +166,32 @@ class Post(db.Model):
 
     def __repr__(self):
         return '<Post %r>' % (self.body)
+
+    def to_json(self):
+        json_post = {
+            'url': url_for('api.get_post', id = self.id, _external=True),
+            'title': self.title,
+            'body': self.body,
+            'author': url_for('api.get_user', id=self.user_id, _external=True),
+            'location': self.location,
+            'timestamp': self.timestamp,
+            'price': self.price,
+            'style': self.style,
+            'bedroom_no': self.bedroom_no,
+            'bathroom_no': self.bathroom_no,
+            'garage_no': self.garage_no,
+            'address': self.address,
+            'comments': url_for('api.get_post_comments', id=self.id, _external=True),
+            'comment_count': self.comments.count()
+        }
+        return json_post
+
+    @staticmethod
+    def from_json(json_post):
+        body = json_post.get('body')
+        if body is None or body == '':
+            raise ValidationError('post does not have a body')
+        return Post(body=body)
 
 
 class Favourite(db.Model):
