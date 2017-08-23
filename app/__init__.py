@@ -1,18 +1,17 @@
-import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
-from flask_openid import OpenID
 from flask_mail import Mail
-from config import basedir, ADMINS, MAIL_SERVER, MAIL_PORT, MAIL_USERNAME, MAIL_PASSWORD
+from config import ADMINS, MAIL_SERVER, MAIL_PORT, MAIL_USERNAME, MAIL_PASSWORD
 from flask_moment import Moment
-from flask_admin import Admin, BaseView,expose
+from flask_admin import Admin
 from flask_bootstrap import Bootstrap
 
 db = SQLAlchemy()
 admin = Admin(name='DeepFit')
 lm = LoginManager()
 mail = Mail()
+
 
 def create_app():
     app = Flask(__name__)
@@ -27,7 +26,6 @@ def create_app():
     moment = Moment(app)
     admin.init_app(app)
     mail.init_app(app)
-    # oid = OpenID(app, os.path.join(basedir, 'tmp'))
 
     if not app.debug:
         import logging
@@ -59,7 +57,6 @@ def create_app():
 
         return app
 
-# from app import views
 from app import models
 
 
