@@ -12,12 +12,12 @@ Flask-Bootstrap==3.3.7.0
 Flask-Script==2.0.5
 Flask-Migrate==2.1.0
 Flask-HTTPAuth==3.2.3
+Flask-RESTful==0.3.6
 Flask-SSLify==0.1.5
 Jinja2==2.9.6
 MarkupSafe==1.0
 SQLAlchemy==1.1.13
 Tempita==0.5.3dev
-WTForms==2.1
 itsdangerous==0.24
 Werkzeug==0.12.2
 ## Whoosh==2.7.4

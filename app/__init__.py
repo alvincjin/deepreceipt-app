@@ -6,21 +6,24 @@ from config import ADMINS, MAIL_SERVER, MAIL_PORT, MAIL_USERNAME, MAIL_PASSWORD
 from flask_moment import Moment
 from flask_admin import Admin
 from flask_bootstrap import Bootstrap
+from flask_restful import Api
 
 db = SQLAlchemy()
 admin = Admin(name='DeepFit')
 lm = LoginManager()
 mail = Mail()
-
+restApi = Api()
 
 def create_app():
-    app = Flask(__name__)
+    app = Flask(__name__, static_url_path="")
     app.config.from_object('config')
     db.init_app(app)
 
     lm.session_protection = 'strong'
     lm.login_view = 'auth.login'  # need right namespace
     lm.init_app(app)
+
+
 
     bootstrap = Bootstrap(app)
     moment = Moment(app)
@@ -52,11 +55,18 @@ def create_app():
         from .auth import auth as auth_blueprint
         app.register_blueprint(auth_blueprint, url_prefix='/auth')
 
-        from .api import api as api_blueprint
-        app.register_blueprint(api_blueprint, url_prefix='/api')
+        #from .api import api as api_blueprint
+        #app.register_blueprint(api_blueprint, url_prefix='/api')
+
+        from .rest import rest as rest_blueprint, tasks
+        app.register_blueprint(rest_blueprint, url_prefix='/rest')
+        restApi.add_resource(tasks.TaskListAPI, '/todo/api/v1.0/tasks', endpoint='tasks')
+        restApi.add_resource(tasks.TaskAPI, '/todo/api/v1.0/tasks/<int:id>', endpoint='task')
+
+        restApi.init_app(app) # to use application factory, we have to add resources before init the app
 
         return app
 
-from app import models
+from app import models, restApi
 
 
