@@ -49,19 +49,19 @@ def create_app():
         app.logger.setLevel(logging.INFO)
         app.logger.info('DeepFit App Startup')
 
-        from .main import main as main_blueprint
-        app.register_blueprint(main_blueprint)
+        from .main import main_bp
+        app.register_blueprint(main_bp)
 
-        from .auth import auth as auth_blueprint
-        app.register_blueprint(auth_blueprint, url_prefix='/auth')
+        from .auth import auth_bp
+        app.register_blueprint(auth_bp, url_prefix='/auth')
 
-        #from .api import api as api_blueprint
-        #app.register_blueprint(api_blueprint, url_prefix='/api')
+        #from .api import api_bp
+        #app.register_blueprint(api_bp, url_prefix='/api')
 
-        from .rest import rest as rest_blueprint, tasks
-        app.register_blueprint(rest_blueprint, url_prefix='/rest')
+        from .rest import rest_bp, tasks
+        app.register_blueprint(rest_bp, url_prefix='/rest')
 
-        restApi.init_app(app) # to use application factory, we have to add resources before init the app
+        restApi.init_app(app)  # to use application factory, we have to add resources before init the app
 
         return app
 

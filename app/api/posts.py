@@ -1,11 +1,11 @@
 from flask import jsonify, request, g, abort, url_for, current_app
 from .. import db
 from ..models import Post
-from . import api
+from . import api_bp
 from .errors import forbidden
 
 
-@api.route('/posts/')
+@api_bp.route('/posts/')
 def get_posts():
     page = request.args.get('page', 1, type=int)
     pagination = Post.query.paginate(
@@ -28,13 +28,13 @@ def get_posts():
     })
 
 
-@api.route('/posts/<int:id>')
+@api_bp.route('/posts/<int:id>')
 def get_post(id):
     post = Post.query.get_or_404(id)
     return jsonify(post.to_json())
 
 
-@api.route('/posts/', methods=['POST'])
+@api_bp.route('/posts/', methods=['POST'])
 def new_post():
     post = Post.from_json(request.json)
     post.author = g.current_user
@@ -44,7 +44,7 @@ def new_post():
            {'Location': url_for('api.get_post', id=post.id, _external=True)}
 
 
-@api.route('/posts/<int:id>', methods=['PUT'])
+@api_bp.route('/posts/<int:id>', methods=['PUT'])
 def edit_post(id):
     post = Post.query.get_or_404(id)
     if g.current_user != post.auther:

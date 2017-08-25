@@ -1,5 +1,5 @@
 from flask import render_template, redirect, request, url_for, flash, g
-from . import auth
+from . import auth_bp
 from flask_login import login_user, logout_user, login_required, current_user
 from .forms import LoginForm, SignupForm
 from ..models import User, ROLE_APPLICANT, ROLE_ADVISER, ROLE_ADMIN
@@ -7,7 +7,7 @@ from app import db
 from app.emails import send_email
 
 
-@auth.before_app_request
+@auth_bp.before_app_request
 def before_request():
     if current_user.is_authenticated:
         current_user.ping()
@@ -17,14 +17,14 @@ def before_request():
             return redirect(url_for('auth.unconfirmed'))
 
 
-@auth.route('/unconfirmed')
+@auth_bp.route('/unconfirmed')
 def unconfirmed():
     if current_user.is_anonymous() or current_user.confirmed:
         return redirect('main.index')
     return render_template('auth/unconfirmed.html')
 
 
-@auth.route('/login', methods=['GET', 'POST'])
+@auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
     if form.validate_on_submit():
@@ -36,7 +36,7 @@ def login():
     return render_template('auth/login.html', form=form)
 
 
-@auth.route('/logout')
+@auth_bp.route('/logout')
 @login_required
 def logout():
     logout_user()
@@ -44,7 +44,7 @@ def logout():
     return redirect(url_for('main.index'))
 
 
-@auth.route('/signup', methods=['GET', 'POST'])
+@auth_bp.route('/signup', methods=['GET', 'POST'])
 def signup():
     form = SignupForm()
 
@@ -84,7 +84,7 @@ def signup():
 
 
 
-@auth.route('/confirm/<token>')
+@auth_bp.route('/confirm/<token>')
 @login_required
 def confirm(token):
     if current_user.confirmed:
@@ -96,7 +96,7 @@ def confirm(token):
     return redirect(url_for('main.index'))
 
 'auth/confirm',
-@auth.route('/confirm')
+@auth_bp.route('/confirm')
 @login_required
 def resend_confirmation():
     token = current_user.generate_confirmation_token()
