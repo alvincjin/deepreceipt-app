@@ -1,11 +1,11 @@
 from flask import Flask, jsonify, abort, make_response
-from flask_restful import Resource, reqparse, fields, marshal
+from flask_restful import Resource, reqparse, fields, marshal, marshal_with
 from flask_httpauth import HTTPBasicAuth
 from app import restApi
-from ..models import User, Post
-
+from ..models import User, Post, Comment
 
 auth = HTTPBasicAuth()
+
 
 @auth.get_password
 def get_password(username):
@@ -19,6 +19,7 @@ def unauthorized():
     # return 403 instead of 401 to prevent browsers from displaying the default
     # auth dialog
     return make_response(jsonify({'message': 'Unauthorized access'}), 403)
+
 
 tasks = [
     {
@@ -42,7 +43,6 @@ task_fields = {
     'uri': fields.Url('task')
 }
 
-
 user_fields = {
     'id': fields.Integer,
     'nickname': fields.String,
@@ -52,7 +52,6 @@ user_fields = {
     'phone': fields.Integer,
     'address': fields.String
 }
-
 
 post_fields = {
     'id': fields.Integer,
@@ -66,6 +65,15 @@ post_fields = {
     'garage_no': fields.Integer,
     'bathroom_no': fields.Integer,
     'style': fields.String
+}
+
+
+comment_fields = {
+    'id': fields.Integer,
+    'body': fields.String,
+    'author_id': fields.Integer,
+    'post_id': fields.Integer,
+    'timestamp': fields.DateTime(dt_format='rfc822')
 }
 
 
@@ -134,53 +142,31 @@ class TaskAPI(Resource):
 class UserAPI(Resource):
     decorators = [auth.login_required]
 
-    def __init__(self):
-        self.reqparse = reqparse.RequestParser()
-        self.reqparse.add_argument('id', type=int, required=True,
-                                   help='No task title provided',
-                                   location='json')
-        self.reqparse.add_argument('nickname', type=str, default="", location='json')
-        self.reqparse.add_argument('firstname', type=str, default="", location='json')
-        self.reqparse.add_argument('lastname', type=str, default="", location='json')
-        self.reqparse.add_argument('email', type=str, default="", location='json')
-        self.reqparse.add_argument('phone', type=str, default="", location='json')
-        self.reqparse.add_argument('address', type=str, default="", location='json')
-
-        super(UserAPI, self).__init__()
-
+    @marshal_with(user_fields, envelope='user')
     def get(self, id):
         user = User.query.get_or_404(id)
-
-        return {'user': marshal(user, user_fields)}
+        return user, 200
 
 
 class PostAPI(Resource):
     decorators = [auth.login_required]
 
-    def __init__(self):
-        self.reqparse = reqparse.RequestParser()
-        self.reqparse.add_argument('id', type=int, required=True,
-                                   help='No task title provided',
-                                   location='json')
-        self.reqparse.add_argument('title', type=str, default="", location='json')
-        self.reqparse.add_argument('body', type=str, default="", location='json')
-        self.reqparse.add_argument('user_id', type=int, default="", location='json')
-        self.reqparse.add_argument('location', type=str, default="", location='json')
-        self.reqparse.add_argument('price', type=int, default="", location='json')
-        self.reqparse.add_argument('address', type=str, default="", location='json')
-        self.reqparse.add_argument('badroom_no', type=int, default="", location='json')
-        self.reqparse.add_argument('garage_no', type=int, default="", location='json')
-        self.reqparse.add_argument('bathroom_no', type=int, default="", location='json')
-        self.reqparse.add_argument('style', type=str, default="", location='json')
-
-        super(PostAPI, self).__init__()
-
+    @marshal_with(post_fields, envelope='post')
     def get(self, id):
         post = Post.query.get_or_404(id)
+        return post, 200
 
-        return {'post': marshal(post, post_fields)}
+
+class CommentAPI(Resource):
+    decorators = [auth.login_required]
+
+    @marshal_with(comment_fields, envelope='comment')
+    def get(self, id):
+        comment = Comment.query.get_or_404(id)
+        return comment, 200
 
 restApi.add_resource(TaskListAPI, '/todo/api/v1.0/tasks', endpoint='tasks')
 restApi.add_resource(TaskAPI, '/todo/api/v1.0/tasks/<int:id>', endpoint='task')
 restApi.add_resource(UserAPI, '/users/<int:id>', endpoint='user')
 restApi.add_resource(PostAPI, '/posts/<int:id>', endpoint='post')
+restApi.add_resource(CommentAPI, '/comments/<int:id>', endpoint='comment')
