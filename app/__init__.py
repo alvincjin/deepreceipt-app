@@ -60,8 +60,6 @@ def create_app():
 
         from .rest import rest as rest_blueprint, tasks
         app.register_blueprint(rest_blueprint, url_prefix='/rest')
-        restApi.add_resource(tasks.TaskListAPI, '/todo/api/v1.0/tasks', endpoint='tasks')
-        restApi.add_resource(tasks.TaskAPI, '/todo/api/v1.0/tasks/<int:id>', endpoint='task')
 
         restApi.init_app(app) # to use application factory, we have to add resources before init the app
 

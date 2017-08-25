@@ -1,9 +1,8 @@
-from flask import Flask, jsonify, abort, make_response, current_app
-from flask_restful import Api, Resource, reqparse, fields, marshal
+from flask import Flask, jsonify, abort, make_response
+from flask_restful import Resource, reqparse, fields, marshal
 from flask_httpauth import HTTPBasicAuth
-#from app import restApi
+from app import restApi
 
-#api = Api(current_app)
 auth = HTTPBasicAuth()
 
 
@@ -104,3 +103,5 @@ class TaskAPI(Resource):
         tasks.remove(task[0])
         return {'result': True}
 
+restApi.add_resource(TaskListAPI, '/todo/api/v1.0/tasks', endpoint='tasks')
+restApi.add_resource(TaskAPI, '/todo/api/v1.0/tasks/<int:id>', endpoint='task')
