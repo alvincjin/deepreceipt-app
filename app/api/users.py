@@ -1,15 +1,15 @@
 from flask import jsonify, request, current_app, url_for
-from . import api
+from . import api_bp
 from ..models import User, Post
 
 
-@api.route('/users/<int:id>')
+@api_bp.route('/users/<int:id>')
 def get_user(id):
     user = User.query.get_or_404(id)
     return jsonify(user.to_json())
 
 
-@api.route('/users/<int:id>/posts/')
+@api_bp.route('/users/<int:id>/posts/')
 def get_user_posts(id):
     user = User.query.get_or_404(id)
     page = request.args.get('page', 1, type=int)

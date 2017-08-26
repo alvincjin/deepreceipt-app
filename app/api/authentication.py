@@ -2,12 +2,12 @@ from flask_httpauth import HTTPBasicAuth
 from flask import g, jsonify
 from ..models import User
 from .errors import unauthorized, forbidden
-from . import api
+from . import api_bp
 
 auth = HTTPBasicAuth()
 
 
-@api.before_request
+@api_bp.before_request
 @auth.login_required
 def before_request():
     if not g.current_user.is_anonymous and \
@@ -29,7 +29,7 @@ def verify_password(email_or_token, password):
     return user.check_password(password)
 
 
-@api.route('/token')
+@api_bp.route('/token')
 def get_token():
     if g.token_used:
         return unauthorized('Invalid credentials')

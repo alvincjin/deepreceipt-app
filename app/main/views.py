@@ -3,7 +3,7 @@ from flask import render_template, current_app, flash, redirect, session, url_fo
 from flask_login import login_user, logout_user, current_user, login_required
 from app import db, lm, admin
 from .forms import *
-from . import main
+from . import main_bp
 from app.models import User, ROLE_APPLICANT, ROLE_ADVISER, ROLE_ADMIN, Post, Comment, Preference, Favourite
 from datetime import datetime
 from app.emails import send_email
@@ -28,7 +28,7 @@ path = op.join(os.path.abspath(__file__ + "/../../"), 'static')  # need to get p
 admin.add_view(FileAdmin(path, '/static/', name='Static Files'))
 
 
-@main.before_app_request
+@main_bp.before_app_request
 def before_request():
     g.user = current_user
     if g.user.is_authenticated:
@@ -37,8 +37,8 @@ def before_request():
         db.session.commit()
 
 
-@main.route('/list_post', methods=['GET', 'POST'])
-@main.route('/list_post/<int:page>', methods=['GET', 'POST'])
+@main_bp.route('/list_post', methods=['GET', 'POST'])
+@main_bp.route('/list_post/<int:page>', methods=['GET', 'POST'])
 @login_required
 def list_post(page=1):
     form = PeferForm()
@@ -69,8 +69,8 @@ def list_post(page=1):
                            pagination=pagination)
 
 
-@main.route('/list_agent', methods=['GET', 'POST'])
-@main.route('/list_agent/<int:page>', methods=['GET', 'POST'])
+@main_bp.route('/list_agent', methods=['GET', 'POST'])
+@main_bp.route('/list_agent/<int:page>', methods=['GET', 'POST'])
 @login_required
 def list_agent(page=1):
     users = User.query.filter(User.role == ROLE_ADVISER).paginate(page, POSTS_PER_PAGE, False)
@@ -80,8 +80,8 @@ def list_agent(page=1):
                            users=users)
 
 
-@main.route('/', methods=['GET'])
-@main.route('/index', methods=['GET'])
+@main_bp.route('/', methods=['GET'])
+@main_bp.route('/index', methods=['GET'])
 def index():
     return render_template('index.html')
 
@@ -91,7 +91,7 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
 
-@main.route('/edit_profile', methods=['GET', 'POST'])
+@main_bp.route('/edit_profile', methods=['GET', 'POST'])
 @login_required
 def edit_profile():
     form = EditForm(current_user.nickname)
@@ -125,7 +125,7 @@ def edit_profile():
     return render_template('edit_profile.html', form=form)
 
 
-@main.route('/preference', methods=['GET', 'POST'])
+@main_bp.route('/preference', methods=['GET', 'POST'])
 @login_required
 def preference():
     form = PeferForm()
@@ -162,8 +162,8 @@ def map_address(address):
     return str(results[0].coordinates).strip('()')
 
 
-@main.route('/edit_post/', methods=['GET', 'POST'])
-@main.route('/edit_post/<int:pid>', methods=['GET', 'POST'])
+@main_bp.route('/edit_post/', methods=['GET', 'POST'])
+@main_bp.route('/edit_post/<int:pid>', methods=['GET', 'POST'])
 @login_required
 def edit_post(pid=0):
 
@@ -211,7 +211,7 @@ def edit_post(pid=0):
     return render_template('new_post.html', form=form)
 
 
-@main.route('/bookmark/<int:pid>', methods=['GET', 'POST'])
+@main_bp.route('/bookmark/<int:pid>', methods=['GET', 'POST'])
 @login_required
 def bookmark(pid):
 
@@ -226,7 +226,7 @@ def bookmark(pid):
     return redirect(url_for('.list_post'))
 
 
-@main.route('/contact', methods=['GET', 'POST'])
+@main_bp.route('/contact', methods=['GET', 'POST'])
 def contact():
     form = ContactForm()
 
@@ -245,7 +245,7 @@ def contact():
         return render_template('contact.html', form=form)
 
 
-@main.route('/home/<int:pid>', methods=['GET', 'POST'])
+@main_bp.route('/home/<int:pid>', methods=['GET', 'POST'])
 @login_required
 def home(pid):
     post = Post.query.get_or_404(pid)
@@ -269,8 +269,8 @@ def home(pid):
                            comments=comments, pagination=pagination)
 
 
-@main.route('/user/<nickname>')
-@main.route('/user/<nickname>/<int:page>')
+@main_bp.route('/user/<nickname>')
+@main_bp.route('/user/<nickname>/<int:page>')
 @login_required
 def user(nickname, page=1):
     user = User.query.filter_by(nickname=nickname).first()
@@ -291,14 +291,14 @@ def user(nickname, page=1):
     return render_template('user.html', user=user, posts=posts, pagination=pagination)
 
 
-@main.route('/signout')
+@main_bp.route('/signout')
 def signout():
     logout_user()
     flash('You have been logged out.')
     return redirect(url_for('.index'))
 
 
-@main.route('/delete/<int:id>')
+@main_bp.route('/delete/<int:id>')
 @login_required
 def delete(id):
     post = Post.query.get(id)
