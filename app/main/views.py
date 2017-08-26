@@ -153,7 +153,7 @@ def preference():
     elif request.method != "POST" and user.pref is not None:
         form = PeferForm(obj=user.pref)
 
-    return render_template('preference.html', form=form)
+    return render_template('edit_preference.html', form=form)
 
 
 def map_address(address):
@@ -207,7 +207,7 @@ def edit_post(pid=0):
     elif request.method != "POST":
         form = PostForm(obj=post)
 
-    return render_template('new_post.html', form=form)
+    return render_template('edit_post.html', form=form)
 
 
 @main_bp.route('/bookmark/<int:pid>', methods=['GET', 'POST'])
@@ -234,10 +234,11 @@ def contact():
             flash('All fields are required.')
             return render_template('contact.html', form=form)
         else:
-            text_body = """
-            From: %s < %s >
-            %s """ % (form.name.data, form.email.data, form.message.data)
-            send_email(form.subject.data, text_body, ADMINS[0])
+            #text_body = """
+            #From: %s < %s >
+            #%s """ % (form.name.data, form.email.data, form.message.data)
+            #send_email(ADMINS[0], form.subject.data, text_body)
+            send_email(ADMINS[0], form.subject.data, 'auth/contact', form=form)
             return render_template('contact.html', success=True)
 
     elif request.method == 'GET':
@@ -268,11 +269,12 @@ def home(pid):
                            comments=comments, pagination=pagination)
 
 
-@main_bp.route('/user/<nickname>')
+@main_bp.route('/user/<nickname>', methods=['GET', 'POST'])
 @main_bp.route('/user/<nickname>/<int:page>')
 @login_required
 def user(nickname, page=1):
     user = User.query.filter_by(nickname=nickname).first()
+
     if user is None:
         flash('User ' + nickname + ' not found.')
         return redirect(url_for('.index'))

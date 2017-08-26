@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block page_content %}
+
+<legend>Set Perferences</legend>
+<div>
+    {{ wtf.quick_form(form) }}
+</div>
+
+{% endblock %}
+
+
