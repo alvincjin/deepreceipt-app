@@ -6,24 +6,21 @@ from config import ADMINS, MAIL_SERVER, MAIL_PORT, MAIL_USERNAME, MAIL_PASSWORD
 from flask_moment import Moment
 from flask_admin import Admin
 from flask_bootstrap import Bootstrap
-from flask_restful import Api
 
 db = SQLAlchemy()
 admin = Admin(name='DeepFit')
 lm = LoginManager()
 mail = Mail()
-restApi = Api()
+
 
 def create_app():
-    app = Flask(__name__, static_url_path="")
+    app = Flask(__name__)
     app.config.from_object('config')
     db.init_app(app)
 
     lm.session_protection = 'strong'
     lm.login_view = 'auth.login'  # need right namespace
     lm.init_app(app)
-
-
 
     bootstrap = Bootstrap(app)
     moment = Moment(app)
@@ -55,16 +52,11 @@ def create_app():
         from .auth import auth_bp
         app.register_blueprint(auth_bp, url_prefix='/auth')
 
-        #from .api import api_bp
-        #app.register_blueprint(api_bp, url_prefix='/api')
-
-        from .rest import rest_bp, tasks
-        app.register_blueprint(rest_bp, url_prefix='/rest')
-
-        restApi.init_app(app)  # to use application factory, we have to add resources before init the app
+        from .api import api_bp
+        app.register_blueprint(api_bp, url_prefix='/api')
 
         return app
 
-from app import models, restApi
+from app import models
 
 
