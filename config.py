@@ -8,20 +8,12 @@ SECRET_KEY = os.environ.get('SECRET_KEY') or 'you-will-never-guess'
 
 RECAPTCHA_PUBLIC_KEY = '6LeYIbsSAAAAACRPIllxA7wvXjIE411PfdB2gt2J'
 RECAPTCHA_PRIVATE_KEY = '6LeYIbsSAAAAAJezaIq3Ft_hSTo0YtyeFG-JgRtu'
-
-OPENID_PROVIDERS = [
-    {'name': 'Google', 'url': 'https://www.google.com/accounts/o8/id'},
-    {'name': 'Yahoo', 'url': 'https://me.yahoo.com'},
-    {'name': 'AOL', 'url': 'http://openid.aol.com/<username>'},
-    {'name': 'Flickr', 'url': 'http://www.flickr.com/<username>'},
-    {'name': 'MyOpenID', 'url': 'https://www.myopenid.com'}]
     
 SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'app.db')
-SQLALCHEMY_MIGRATE_REPO = os.path.join(basedir, 'db_repository')
-WHOOSH_BASE = os.path.join(basedir, 'search.db')
 SQLALCHEMY_COMMIT_ON_TEARDOWN = True
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 
+# pagination
 FLASKY_POSTS_PER_PAGE = 10
 FLASKY_COMMENTS_PER_PAGE = 10
 
@@ -37,7 +29,3 @@ MAIL_PASSWORD = ''
 
 # administrator list
 ADMINS = ['alvinuw@gmail.com']
-
-# pagination
-POSTS_PER_PAGE = 3
-MAX_SEARCH_RESULTS = 50

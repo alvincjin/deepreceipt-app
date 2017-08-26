@@ -7,7 +7,6 @@ from . import main_bp
 from app.models import User, ROLE_APPLICANT, ROLE_ADVISER, ROLE_ADMIN, Post, Comment, Preference, Favourite
 from datetime import datetime
 from app.emails import send_email
-from config import POSTS_PER_PAGE, MAX_SEARCH_RESULTS
 from werkzeug.utils import secure_filename
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.contrib.fileadmin import FileAdmin
@@ -59,7 +58,7 @@ def list_post(page=1):
             .filter(Post.bedroom_no >= pref.bedroom_no - 1).filter(Post.bedroom_no <= pref.bedroom_no + 1) \
             .order_by(Post.timestamp.desc())
 
-        posts = results.paginate(page, POSTS_PER_PAGE, False).items
+        posts = results.paginate(page, current_app.config['FLASKY_POSTS_PER_PAGE'], False).items
         flash('Find ' + str(results.count()) + ' matching results')
 
     return render_template('list_post.html',
@@ -73,7 +72,7 @@ def list_post(page=1):
 @main_bp.route('/list_agent/<int:page>', methods=['GET', 'POST'])
 @login_required
 def list_agent(page=1):
-    users = User.query.filter(User.role == ROLE_ADVISER).paginate(page, POSTS_PER_PAGE, False)
+    users = User.query.filter(User.role == ROLE_ADVISER).paginate(page, current_app.config['FLASKY_POSTS_PER_PAGE'], False)
 
     return render_template('list_agent.html',
                            title='All the Agents',
@@ -279,13 +278,13 @@ def user(nickname, page=1):
         return redirect(url_for('.index'))
 
     if user.role == ROLE_ADVISER:
-        pagination = user.posts.paginate(page, POSTS_PER_PAGE, False)
+        pagination = user.posts.paginate(page, current_app.config['FLASKY_POSTS_PER_PAGE'], False)
     elif user.role == ROLE_APPLICANT:
         favs = user.fav.all()
         idlist = []
         for fav in favs:
             idlist.append(fav.post_id)
-        pagination = Post.query.filter(Post.id.in_(idlist)).paginate(page, POSTS_PER_PAGE, False)
+        pagination = Post.query.filter(Post.id.in_(idlist)).paginate(page, current_app.config['FLASKY_POSTS_PER_PAGE'], False)
 
     posts = pagination.items
     return render_template('user.html', user=user, posts=posts, pagination=pagination)
