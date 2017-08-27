@@ -27,7 +27,8 @@
                 <p>About Me: {{user.about_me}}</p>
                 {% endif %}
 
-                <p>Member since {{ moment(user.member_since).format('L') }}. Last seen {{ moment(user.last_seen).fromNow() }}.</p>
+                <p>Member since {{ moment(user.member_since).format('L') }}. Last seen {{
+                    moment(user.last_seen).fromNow() }}.</p>
 
 
                 {% if user == current_user %}
@@ -52,8 +53,7 @@
                 </a>
 
                 <div id="myModal" class="modal hide fade" tabindex="-1" role="dialog"
-                     aria-labelledby="myModalLabel"
-                     aria-hidden="true">
+                     aria-labelledby="myModalLabel" aria-hidden="true">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
                             &times;
@@ -80,15 +80,14 @@
 
         <td width="70px">
             <div class="well well-large" style="height: 210px;">
-                <img border="0" src="{{user.portrait}}"
-                     alt="Image is not Available." width="140" height="200"
+                <img border="0" src="{{user.portrait}}" alt="Image is not Available." width="140" height="200"
                      class="img-polaroid"/>
             </div>
         </td>
     </tr>
 </table>
 
-{% if user.role== 0 %}
+{% if user.role==0 %}
 <h4>My Dream Home</h4>
 
 <table class="table table-hover">
@@ -118,6 +117,5 @@
 <div class="pagination">
     {{ macros.pagination_widget(pagination, '.index') }}
 </div>
-
 
 {% endblock %}
