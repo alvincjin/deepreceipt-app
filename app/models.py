@@ -21,6 +21,7 @@ def load_user(id):
 
 
 class User(UserMixin, db.Model):
+    __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     nickname = db.Column(db.String(64), unique=True)
     firstname = db.Column(db.String(100))
@@ -139,14 +140,14 @@ class User(UserMixin, db.Model):
 
 
 class Post(db.Model):
+    __tablename__ = 'posts'
     __searchable__ = ['body']
-
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(140))
     body = db.Column(db.String(1400))
     img = db.Column(db.String(140))
     timestamp = db.Column(db.DateTime)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     location = db.Column(db.String(140))
     price = db.Column(db.Integer)
     interested_user = db.relationship('Favourite', backref='author', lazy='dynamic',
@@ -190,9 +191,10 @@ class Post(db.Model):
 
 
 class Favourite(db.Model):
+    __tablename__ = 'favourites'
     id = db.Column(db.String(10), primary_key=True, unique=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    post_id = db.Column(db.Integer, db.ForeignKey('post.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    post_id = db.Column(db.Integer, db.ForeignKey('posts.id'))
 
     def __init__(self, user_id, post_id):
         self.id = str(user_id) + ':' + str(post_id)
@@ -201,6 +203,7 @@ class Favourite(db.Model):
 
 
 class Preference(db.Model):
+    __tablename__ = 'preferences'
     id = db.Column(db.Integer, primary_key=True)
     style = db.Column(db.String(10), default="house")
     bedroom_no = db.Column(db.Integer)
@@ -208,17 +211,17 @@ class Preference(db.Model):
     garage_no = db.Column(db.Integer)
     location = db.Column(db.String(140))
     price = db.Column(db.Integer)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     notify = db.Column(db.SmallInteger, default=1)
 
 
 class Comment(db.Model):
-
+    __tablename__ = 'comments'
     id = db.Column(db.Integer, primary_key=True)
     body = db.Column(db.Text)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
-    author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    post_id = db.Column(db.Integer, db.ForeignKey('post.id'))
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    post_id = db.Column(db.Integer, db.ForeignKey('posts.id'))
 
     def to_json(self):
         json_comment = {
