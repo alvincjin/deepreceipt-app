@@ -1,4 +1,4 @@
-Dear {{ user.username }},
+Dear {{ user.nickname }},
 
 Welcome to DeepFit!
 To confirm your account please click on the following link:

@@ -7,7 +7,6 @@ from . import main_bp
 from app.models import User, ROLE_APPLICANT, ROLE_ADVISER, ROLE_ADMIN, Post, Comment, Preference, Favourite
 from datetime import datetime
 from app.emails import send_email
-from config import POSTS_PER_PAGE, MAX_SEARCH_RESULTS
 from werkzeug.utils import secure_filename
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.contrib.fileadmin import FileAdmin
@@ -59,7 +58,7 @@ def list_post(page=1):
             .filter(Post.bedroom_no >= pref.bedroom_no - 1).filter(Post.bedroom_no <= pref.bedroom_no + 1) \
             .order_by(Post.timestamp.desc())
 
-        posts = results.paginate(page, POSTS_PER_PAGE, False).items
+        posts = results.paginate(page, current_app.config['FLASKY_POSTS_PER_PAGE'], False).items
         flash('Find ' + str(results.count()) + ' matching results')
 
     return render_template('list_post.html',
@@ -73,7 +72,7 @@ def list_post(page=1):
 @main_bp.route('/list_agent/<int:page>', methods=['GET', 'POST'])
 @login_required
 def list_agent(page=1):
-    users = User.query.filter(User.role == ROLE_ADVISER).paginate(page, POSTS_PER_PAGE, False)
+    users = User.query.filter(User.role == ROLE_ADVISER).paginate(page, current_app.config['FLASKY_POSTS_PER_PAGE'], False)
 
     return render_template('list_agent.html',
                            title='All the Agents',
@@ -154,7 +153,7 @@ def preference():
     elif request.method != "POST" and user.pref is not None:
         form = PeferForm(obj=user.pref)
 
-    return render_template('preference.html', form=form)
+    return render_template('edit_preference.html', form=form)
 
 
 def map_address(address):
@@ -208,7 +207,7 @@ def edit_post(pid=0):
     elif request.method != "POST":
         form = PostForm(obj=post)
 
-    return render_template('new_post.html', form=form)
+    return render_template('edit_post.html', form=form)
 
 
 @main_bp.route('/bookmark/<int:pid>', methods=['GET', 'POST'])
@@ -235,10 +234,11 @@ def contact():
             flash('All fields are required.')
             return render_template('contact.html', form=form)
         else:
-            text_body = """
-            From: %s < %s >
-            %s """ % (form.name.data, form.email.data, form.message.data)
-            send_email(form.subject.data, text_body, ADMINS[0])
+            #text_body = """
+            #From: %s < %s >
+            #%s """ % (form.name.data, form.email.data, form.message.data)
+            #send_email(ADMINS[0], form.subject.data, text_body)
+            send_email(ADMINS[0], form.subject.data, 'auth/contact', form=form)
             return render_template('contact.html', success=True)
 
     elif request.method == 'GET':
@@ -269,23 +269,24 @@ def home(pid):
                            comments=comments, pagination=pagination)
 
 
-@main_bp.route('/user/<nickname>')
+@main_bp.route('/user/<nickname>', methods=['GET', 'POST'])
 @main_bp.route('/user/<nickname>/<int:page>')
 @login_required
 def user(nickname, page=1):
     user = User.query.filter_by(nickname=nickname).first()
+
     if user is None:
         flash('User ' + nickname + ' not found.')
         return redirect(url_for('.index'))
 
     if user.role == ROLE_ADVISER:
-        pagination = user.posts.paginate(page, POSTS_PER_PAGE, False)
+        pagination = user.posts.paginate(page, current_app.config['FLASKY_POSTS_PER_PAGE'], False)
     elif user.role == ROLE_APPLICANT:
         favs = user.fav.all()
         idlist = []
         for fav in favs:
             idlist.append(fav.post_id)
-        pagination = Post.query.filter(Post.id.in_(idlist)).paginate(page, POSTS_PER_PAGE, False)
+        pagination = Post.query.filter(Post.id.in_(idlist)).paginate(page, current_app.config['FLASKY_POSTS_PER_PAGE'], False)
 
     posts = pagination.items
     return render_template('user.html', user=user, posts=posts, pagination=pagination)

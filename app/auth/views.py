@@ -82,8 +82,6 @@ def signup():
         return render_template('auth/register.html', form=form)
 
 
-
-
 @auth_bp.route('/confirm/<token>')
 @login_required
 def confirm(token):
@@ -95,7 +93,7 @@ def confirm(token):
         flash('The confirmation link is invalid or has expired.')
     return redirect(url_for('main.index'))
 
-'auth/confirm',
+
 @auth_bp.route('/confirm')
 @login_required
 def resend_confirmation():

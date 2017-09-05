@@ -12,7 +12,7 @@
             <div class="well well-large" style="height: 210px;">
                 <div class="page-header">
                     <h4>
-                        <h1>{{user.firstname}}&nbsp;{{user.lastname}}&nbsp;({{user.nickname}})</h1>
+                        <h1>{{user.firstname}}&nbsp;{{user.lastname}}&nbsp;({{user.role}})</h1>
                     </h4>
                 </div>
                 <p>
@@ -27,14 +27,15 @@
                 <p>About Me: {{user.about_me}}</p>
                 {% endif %}
 
-                <p>Member since {{ moment(user.member_since).format('L') }}. Last seen {{ moment(user.last_seen).fromNow() }}.</p>
+                <p>Member since {{ moment(user.member_since).format('L') }}. Last seen {{
+                    moment(user.last_seen).fromNow() }}.</p>
 
 
                 {% if user == current_user %}
                 <a href="{{url_for('main.edit_profile')}}">
                     <i class="icon-user"></i>Edit Profile
                 </a>
-                {% if user.role== ROLE_APPLICANT %}
+                {% if user.role== 0 %}
                 &nbsp;&nbsp;&nbsp;
                 <a href="{{url_for('main.preference')}}">
                     <i class="icon-check"></i>Preference
@@ -52,8 +53,7 @@
                 </a>
 
                 <div id="myModal" class="modal hide fade" tabindex="-1" role="dialog"
-                     aria-labelledby="myModalLabel"
-                     aria-hidden="true">
+                     aria-labelledby="myModalLabel" aria-hidden="true">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
                             &times;
@@ -80,15 +80,14 @@
 
         <td width="70px">
             <div class="well well-large" style="height: 210px;">
-                <img border="0" src="{{user.portrait}}"
-                     alt="Image is not Available." width="140" height="200"
+                <img border="0" src="{{user.portrait}}" alt="Image is not Available." width="140" height="200"
                      class="img-polaroid"/>
             </div>
         </td>
     </tr>
 </table>
 
-{% if user.role==ROLE_APPLICANT %}
+{% if user.role==0 %}
 <h4>My Dream Home</h4>
 
 <table class="table table-hover">
@@ -118,6 +117,5 @@
 <div class="pagination">
     {{ macros.pagination_widget(pagination, '.index') }}
 </div>
-
 
 {% endblock %}

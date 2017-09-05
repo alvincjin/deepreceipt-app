@@ -1,16 +1,15 @@
-<!-- extend base layout -->
 {% extends "base.html" %}
-
 {% import "bootstrap/wtf.html" as wtf %}
+{% block title %}DeepFit - Set Preference{% endblock %}
 
-{% block title %}DeepFit - Edit Post{% endblock %}
 {% block page_content %}
 <div class="page-header">
-    <h1>Edit Post</h1>
+    <h1>Set Preference</h1>
 </div>
 <div>
     {{ wtf.quick_form(form) }}
 </div>
+
 {% endblock %}
 
 

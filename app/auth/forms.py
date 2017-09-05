@@ -1,14 +1,13 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField, validators
 from wtforms.validators import DataRequired, Length, Email, Regexp, EqualTo
-from wtforms import ValidationError
 from flask_wtf.recaptcha import RecaptchaField
 from ..models import User
 
 
 class LoginForm(FlaskForm):
     email = StringField("Email", [validators.required("Please enter your email address."),
-                                  validators.Email("Please enter your email address.")])
+                                  Email("Please enter your email address.")])
     password = PasswordField('Password', [validators.required("Please enter a password.")])
     remember_me = BooleanField('Remember me', default = False)
     submit = SubmitField("Sign In")
