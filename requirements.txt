@@ -19,7 +19,7 @@ MarkupSafe==1.0
 SQLAlchemy==1.1.13
 Tempita==0.5.3dev
 itsdangerous==0.24
-Werkzeug==0.12.2
+Werkzeug==0.15.3
 pyOpenSSL==17.2.0
 ## Whoosh==2.7.4
 argparse==1.4.0
