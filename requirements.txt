@@ -14,7 +14,7 @@ Flask-Migrate==2.1.0
 Flask-HTTPAuth==3.2.3
 Flask-RESTful==0.3.6
 Flask-JWT==0.3.2
-Jinja2==2.9.6
+Jinja2==2.11.3
 MarkupSafe==1.0
 SQLAlchemy==1.1.13
 Tempita==0.5.3dev
